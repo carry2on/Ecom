@@ -9,4 +9,4 @@ def about(req):
 def login_user(req):
     return render(req,'login.html')
 def logout_user(req):
-    pass
+    return render(req,'home.html')
