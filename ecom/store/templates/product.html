@@ -38,14 +38,16 @@
         <!-- Product price -->
         <strike>${{ product.price }}</strike>
         &nbsp;
-        ${{ product.sale_price }}
+        ₹{{ product.sale_price }}
 
         {% else %}
 
-        ${{ product.price }}
+        ₹{{ product.price }}
+        <br>
+        {{product.description}}
 
         {% endif %}
-
+      <a href="{% url "home" %}" class='btn btn-secondary'>Go to Home</a>
       </div>
     </div>
 
