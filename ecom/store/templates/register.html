@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Register Account</h1>
+            <p class="lead fw-normal text-white-50 mb-0">
+                Make your new account here
+            </p>
+        </div>
+    </div>
+</header>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+
+            <div class="card shadow-lg">
+                <div class="card-body p-4">
+
+                    <h3 class="text-center mb-4">Make new account here</h3>
+
+                    <form method="POST" action="{% url 'register' %}">
+                        {% csrf_token %}
+
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.errors }}
+                        </div>
+                        {% endif %}
+
+                        {{ form.as_p }}
+
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn btn-dark px-4">
+                                Register
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
