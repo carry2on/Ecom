@@ -31,10 +31,7 @@ def logout_user(req):
     logout(req)
     messages.success(req,('you ae sucessfully loged out '))
     return redirect('home')
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib import messages
-from .forms import SignUpForm
+
 def product(req,pk):
     product=Product.objects.get(id=pk)
     return render(req,'product.html',{'product':product})
