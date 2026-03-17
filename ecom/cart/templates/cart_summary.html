@@ -1,83 +1,331 @@
 {% extends "base.html" %}
-{% load static %}
 
 {% block content %}
 
-<header class="bg-dark py-5">
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">Shopping Cart</h1>
-            <p class="lead fw-normal text-white-50 mb-0">View Your Cart</p>
-        </div>
+<style>
+/* ===============================
+   Header Styling
+================================*/
+.cart-header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+    padding: 100px 0 140px 0; /* Extra padding for overlap effect */
+}
+
+.cart-header h1 {
+    letter-spacing: -1px;
+    font-weight: 800;
+    animation: fadeDown 1s ease forwards;
+}
+
+.cart-header p {
+    animation: fadeUp 1.2s ease forwards;
+    color: #a0a0a0 !important;
+}
+
+/* ===============================
+   Layout & Overlap
+================================*/
+.cart-container {
+    margin-top: -80px; /* Pulls the grid up into the dark header */
+    position: relative;
+    z-index: 10;
+}
+
+/* ===============================
+   Cart Item Cards
+================================*/
+.premium-cart-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-bottom: 25px;
+}
+
+.premium-cart-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+}
+
+.cart-img-wrapper {
+    background-color: #fcfcfc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    height: 100%;
+    border-right: 1px solid #f0f0f0;
+}
+
+.cart-img {
+    max-height: 200px;
+    object-fit: contain;
+}
+
+/* ===============================
+   Typography & Pricing
+================================*/
+.item-title {
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: #212529;
+    margin-bottom: 8px;
+}
+
+.item-desc {
+    color: #6c757d;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.price-old { color: #adb5bd; font-size: 1.1rem; margin-right: 8px; }
+.price-new { color: #d9534f; font-size: 1.4rem; font-weight: 800; }
+.price-regular { color: #212529; font-size: 1.4rem; font-weight: 800; }
+
+/* ===============================
+   Quantity Select
+================================*/
+.qty-select {
+    border-radius: 12px !important;
+    border: 2px solid #e9ecef !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    text-align: center;
+    width: 80px;
+}
+
+.qty-select:focus {
+    border-color: #212529 !important;
+    box-shadow: none !important;
+}
+
+/* ===============================
+   Premium Buttons
+================================*/
+.btn-premium {
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #212529, #000);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-premium:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.25); color: white; }
+
+.btn-outline-premium {
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    background: transparent;
+    color: #212529;
+    border: 2px solid #212529;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-premium:hover { background: #212529; color: #ffffff; box-shadow: 0 5px 15px rgba(33, 37, 41, 0.2); }
+
+.btn-danger-premium {
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    background: #fff;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+    transition: all 0.3s ease;
+}
+
+.btn-danger-premium:hover { background: #dc3545; color: #fff; box-shadow: 0 5px 15px rgba(220, 53, 69, 0.2); transform: translateY(-2px); }
+
+/* ===============================
+   Order Summary Box
+================================*/
+.summary-box {
+    background: #f8f9fa;
+    border-radius: 24px;
+    padding: 40px;
+    border: 1px solid #e9ecef;
+}
+
+/* Animations */
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<header class="cart-header text-center">
+    <div class="container px-4 px-lg-5">
+        <h1 class="display-4 text-white">Shopping Cart</h1>
+        <p class="lead fw-normal mb-0">Review your items and checkout</p>
     </div>
 </header>
 
-<br>
+<div class="container pb-5">
+    <div class="row cart-container justify-content-center">
 
-<div class="container">
+    {% if cart_products %}
+        <div class="col-lg-9">
+            
+            {% for product in cart_products %}
+            <div class="card premium-cart-card">
+                <div class="row g-0">
 
-{% if cart_products %}
+                    <div class="col-md-4">
+                        <div class="cart-img-wrapper">
+                            <img src="{{ product.image.url }}" class="img-fluid cart-img" alt="{{ product.name }}">
+                        </div>
+                    </div>
 
-    {% for product in cart_products %}
+                    <div class="col-md-8">
+                        <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-between h-100">
+                            
+                            <div>
+                                <h5 class="item-title">{{ product.name }}</h5>
+                                <p class="item-desc">{{ product.description }}</p>
 
-    <div class="card mb-3">
-      <div class="row g-0">
+                                <div class="mb-4">
+                                    {% if product.is_sales %}
+                                        <strike class="price-old">₹{{ product.price }}</strike>
+                                        <span class="price-new">₹{{ product.sale_price }}</span>
+                                    {% else %}
+                                        <span class="price-regular">₹{{ product.price }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
 
-        <!-- Product Image -->
-        <div class="col-md-4">
-          <img src="{{ product.image.url }}" class="img-fluid rounded-start">
+                            <div class="d-flex flex-wrap align-items-center gap-3">
+                                <div class="d-flex align-items-center me-3">
+                                    <span class="fw-bold text-muted me-2" style="font-size: 0.9rem; text-transform: uppercase;">Qty:</span>
+                                    <select class="form-select qty-select" id="select{{ product.id }}">
+                                        <option value="1" {% if product.cart_qty == 1 %}selected{% endif %}>1</option>
+                                        <option value="2" {% if product.cart_qty == 2 %}selected{% endif %}>2</option>
+                                        <option value="3" {% if product.cart_qty == 3 %}selected{% endif %}>3</option>
+                                        <option value="4" {% if product.cart_qty == 4 %}selected{% endif %}>4</option>
+                                        <option value="5" {% if product.cart_qty == 5 %}selected{% endif %}>5</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="button" class="btn btn-outline-premium update-cart" data-index="{{ product.id }}">
+                                    <i class="bi-arrow-clockwise me-1"></i> Update
+                                </button>
+
+                                <button type="button" class="btn btn-danger-premium delete-product" data-index="{{ product.id }}">
+                                    <i class="bi-trash3 me-1"></i> Remove
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="summary-box mt-5 text-end shadow-sm">
+                <h4 class="fw-bold text-muted mb-2 text-uppercase" style="font-size: 1rem; letter-spacing: 1px;">Subtotal</h4>
+                <h2 class="fw-bolder text-dark mb-4 display-6">₹{{ totals }}</h2>
+                
+                <div class="d-flex justify-content-end gap-3 flex-wrap">
+                    <a href="{% url 'home' %}" class="btn btn-outline-premium">
+                        <i class="bi-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                    <a href="{% url 'checkout' %}" class="btn btn-premium px-5">
+                        Proceed to Checkout <i class="bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+
         </div>
 
-        <!-- Product Details -->
-        <div class="col-md-8">
-          <div class="card-body text-center">
-
-            <h4 class="card-title">{{ product.name }}</h4>
-
-            <p class="card-text">
-                {{ product.description }}
-            </p>
-
-            {% if product.is_sales %}
-
-            <strike>₹{{ product.price }}</strike>
-            &nbsp;
-            <strong>₹{{ product.sale_price }}</strong>
-
-            {% else %}
-
-            <strong>₹{{ product.price }}</strong>
-
-            {% endif %}
-
-            <br><br>
-
-            <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
-
-            <button class="btn btn-dark">
-                Remove
-            </button>
-
-          </div>
+    {% else %}
+        <div class="col-md-8 mx-auto text-center">
+            <div class="card premium-cart-card p-5 mt-4">
+                <div class="mb-4" style="font-size: 4rem; color: #dee2e6;">
+                    <i class="bi-cart-x"></i>
+                </div>
+                <h3 class="fw-bold text-dark mb-3">Your Cart Is Empty</h3>
+                <p class="text-muted mb-5">Looks like you haven't added anything to your cart yet.</p>
+                <a href="{% url 'home' %}" class="btn btn-premium btn-lg mx-auto" style="max-width: 300px;">
+                    Start Shopping
+                </a>
+            </div>
         </div>
+    {% endif %}
 
-      </div>
     </div>
-
-    {% endfor %}
-
-{% else %}
-
-<div class="text-center">
-    <h3>Your Cart Is Empty 🛒</h3>
-    <br>
-    <a href="{% url 'home' %}" class="btn btn-dark">Go Shopping</a>
 </div>
 
-{% endif %}
+<br><br><br>
 
-</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+// Update script
+$(document).on('click', '.update-cart', function(e){
+    e.preventDefault();
 
-<br><br>
+    var product_id = $(this).data('index');
+    var product_qty = $('#select' + product_id).val();
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'cart_update' %}",
+        data: {
+            product_id: product_id,
+            product_qty: product_qty,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
+        success: function(json){
+            var cartCounter = document.getElementById("cart-quantity");
+            if (cartCounter) {
+                cartCounter.textContent = json.qty;
+            }
+            location.reload();
+        },
+        error: function(xhr, errmsg, err){
+            console.log("ERROR:", errmsg);
+        }
+    });
+});
+
+// Delete script
+$(document).on('click', '.delete-product', function(e){
+    e.preventDefault();
+
+    var product_id = $(this).data('index');
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'cart_delete' %}",
+        data: {
+            product_id: product_id,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
+        success: function(json){
+            var cartCounter = document.getElementById("cart-quantity");
+            if (cartCounter) {
+                cartCounter.textContent = json.qty;
+            }
+            location.reload();
+        },
+        error: function(xhr, errmsg, err){
+            console.log("ERROR:", errmsg);
+        }
+    });
+});
+</script>
 
 {% endblock %}

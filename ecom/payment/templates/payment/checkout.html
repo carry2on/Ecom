@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* ===============================
+   Header Styling
+================================*/
+.checkout-header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+    padding: 100px 0 140px 0; /* Extra padding for overlap effect */
+}
+
+.checkout-header h1 {
+    letter-spacing: -1px;
+    font-weight: 800;
+    animation: fadeDown 1s ease forwards;
+}
+
+.checkout-header p {
+    animation: fadeUp 1.2s ease forwards;
+    color: #a0a0a0 !important;
+}
+
+/* ===============================
+   Layout & Overlap
+================================*/
+.checkout-container {
+    margin-top: -80px; /* Pulls the grid up into the dark header */
+    position: relative;
+    z-index: 10;
+}
+
+/* ===============================
+   Premium Cards
+================================*/
+.premium-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    border: 1px solid #f0f0f0;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.card-header-premium {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 20px 30px;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #212529;
+    letter-spacing: -0.5px;
+}
+
+/* ===============================
+   Order Summary Styling
+================================*/
+.order-item {
+    padding: 15px 0;
+    border-bottom: 1px dashed #e9ecef;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.item-name {
+    font-weight: 700;
+    color: #212529;
+    font-size: 1.05rem;
+    margin-bottom: 5px;
+}
+
+.item-price {
+    font-weight: 700;
+    color: #212529;
+}
+
+.price-strike {
+    color: #adb5bd;
+    font-size: 0.85rem;
+    margin-right: 5px;
+}
+
+.total-row {
+    background: #fdfdfd;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 15px;
+    border: 1px solid #f0f0f0;
+}
+
+/* ===============================
+   Styling Django's Shipping Form
+================================*/
+.premium-card label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Force override Bootstrap to style Django's auto-generated inputs */
+.premium-card input[type="text"], 
+.premium-card input[type="email"], 
+.premium-card select, 
+.premium-card textarea {
+    display: block !important;
+    width: 100% !important;
+    border-radius: 14px !important;
+    padding: 14px 18px !important;
+    border: 2px solid #e9ecef !important;
+    background-color: #fcfcfc !important;
+    font-weight: 500 !important;
+    font-size: 1rem !important;
+    color: #212529 !important;
+    transition: all 0.3s ease !important;
+    margin-bottom: 15px !important;
+}
+
+.premium-card input:focus, 
+.premium-card select:focus {
+    border-color: #212529 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(33, 37, 41, 0.08) !important;
+    outline: none !important;
+}
+
+/* ===============================
+   Premium Buttons
+================================*/
+.btn-premium {
+    border-radius: 30px;
+    padding: 14px 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #212529, #000);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-premium:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.25); color: white; }
+
+.btn-outline-premium {
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: transparent;
+    color: #212529;
+    border: 2px solid #212529;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-outline-premium:hover { background: #212529; color: #ffffff; box-shadow: 0 5px 15px rgba(33, 37, 41, 0.2); }
+
+/* Animations */
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<header class="checkout-header text-center">
+    <div class="container px-4 px-lg-5">
+        <h1 class="display-4 text-white">Checkout</h1>
+        <p class="lead fw-normal mb-0">Review your order and shipping details</p>
+    </div>
+</header>
+
+<div class="container pb-5">
+    <div class="row checkout-container justify-content-center">
+        
+        <div class="col-lg-5 mb-4">
+            <div class="card premium-card sticky-top" style="top: 100px; z-index: 5;">
+                <div class="card-header-premium">
+                    <i class="bi-bag-check me-2"></i>Order Summary
+                </div>
+                <div class="card-body p-4">
+                    
+                    {% for product in cart_products %}
+                    <div class="order-item">
+                        <div class="item-name">{{ product.name }}</div>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="text-muted small fw-bold">QTY: 
+                                {% for key, value in quantities.items %}
+                                    {% if key == product.id|slugify %}
+                                        {{ value.qty }}
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                            <span class="item-price">
+                                {% if product.is_sales %}
+                                    <strike class="price-strike">₹{{ product.price }}</strike>
+                                    ₹{{ product.sale_price }}
+                                {% else %}
+                                    ₹{{ product.price }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="total-row d-flex justify-content-between align-items-center">
+                        <span class="text-uppercase fw-bold text-muted" style="letter-spacing: 1px;">Total Amount</span>
+                        <h4 class="fw-bolder text-dark mb-0">₹{{ totals }}</h4>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'cart_summary' %}" class="btn btn-outline-premium w-100">
+                            <i class="bi-cart me-2"></i>Edit Cart Items
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card premium-card">
+                <div class="card-header-premium">
+                    <i class="bi-box-seam me-2"></i>Shipping Information
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    
+                    <form method="POST" action="{% url 'billing_info' %}">
+                        {% csrf_token %}
+                        
+                        {{ shipping_form.as_p }}
+                        
+                        <div class="mt-5 pt-3 border-top">
+                            <button type="submit" class="btn btn-premium w-100 btn-lg shadow-sm">
+                                Proceed to Billing <i class="bi-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<br><br><br>
+
+{% endblock %}

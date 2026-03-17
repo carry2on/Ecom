@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* ===============================
+   Header Styling
+================================*/
+.order-header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+    padding: 100px 0 140px 0; /* Extra padding for overlap effect */
+}
+
+.order-header h1 {
+    letter-spacing: -1px;
+    font-weight: 800;
+    animation: fadeDown 1s ease forwards;
+}
+
+.order-header p {
+    animation: fadeUp 1.2s ease forwards;
+    color: #a0a0a0 !important;
+}
+
+/* ===============================
+   Premium Card (Overlapping Effect)
+================================*/
+.order-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    margin-top: -80px; /* Pulls the card up into the dark header */
+    position: relative;
+    z-index: 10;
+    padding: 40px;
+}
+
+/* ===============================
+   Data Typography
+================================*/
+.info-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #adb5bd;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.info-data {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 20px;
+}
+
+.address-box {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px 20px;
+    font-family: inherit; /* Overrides the ugly <pre> monospace font */
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #495057;
+    white-space: pre-wrap; /* Keeps the line breaks but allows text wrapping */
+    border: 1px solid #e9ecef;
+    margin-bottom: 0;
+}
+
+/* ===============================
+   Premium Table Styling
+================================*/
+.table-wrapper {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+    margin-top: 15px;
+}
+
+.premium-table {
+    margin-bottom: 0;
+}
+
+.premium-table thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 15px 20px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.premium-table tbody td {
+    padding: 15px 20px;
+    vertical-align: middle;
+    color: #212529;
+    font-weight: 500;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+/* ===============================
+   Form & Input Styling
+================================*/
+.custom-select {
+    display: block !important;
+    width: 100% !important;
+    border-radius: 14px !important;
+    padding: 14px 18px !important;
+    border: 2px solid #e9ecef !important;
+    background-color: #fcfcfc !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    color: #212529 !important;
+    transition: all 0.3s ease !important;
+}
+
+.custom-select:focus {
+    border-color: #212529 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(33, 37, 41, 0.08) !important;
+    outline: none !important;
+}
+
+/* ===============================
+   Action Button
+================================*/
+.btn-success-premium {
+    border-radius: 14px;
+    padding: 14px 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #198754, #146c43);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(25, 135, 84, 0.2);
+}
+
+.btn-success-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(25, 135, 84, 0.3);
+    color: white;
+}
+
+/* Animations */
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<header class="order-header text-center">
+    <div class="container px-4 px-lg-5">
+        <h1 class="display-4 text-white">Order Details</h1>
+        <p class="lead fw-normal mb-0">Manage order #{{ order.id }}</p>
+    </div>
+</header>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+            
+            <div class="card order-card">
+                
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-4 mb-4">
+                    <h3 class="fw-bold text-dark mb-0">Order #{{ order.id }}</h3>
+                    <span class="badge {% if order.shipped %}bg-success{% else %}bg-warning text-dark{% endif %} rounded-pill px-3 py-2" style="font-size: 0.85rem;">
+                        {% if order.shipped %}Shipped{% else %}Un-Shipped{% endif %}
+                    </span>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-6 border-end pe-4">
+                        <h5 class="fw-bold mb-4 text-secondary"><i class="bi-person-badge me-2"></i>Customer Info</h5>
+                        
+                        <div class="info-label">Full Name</div>
+                        <div class="info-data">{{ order.fullname }}</div>
+                        
+                        <div class="info-label">Email Address</div>
+                        <div class="info-data">{{ order.email }}</div>
+                        
+                        <div class="info-label">Date Ordered</div>
+                        <div class="info-data">{{ order.date_ordered }}</div>
+                        
+                        <div class="info-label">Amount Paid</div>
+                        <div class="info-data text-success fs-5">₹{{ order.amount_paid }}</div>
+                    </div>
+
+                    <div class="col-md-6 ps-4">
+                        <h5 class="fw-bold mb-4 text-secondary"><i class="bi-truck me-2"></i>Shipping Address</h5>
+                        
+                        <pre class="address-box">{{ order.ShippingAddress }}</pre>
+                    </div>
+                </div>
+
+                <hr class="my-5" style="opacity: 0.1;">
+
+                <h5 class="fw-bold mb-3 text-secondary"><i class="bi-box-seam me-2"></i>Items in this Order</h5>
+                <div class="table-responsive table-wrapper mb-5">
+                    <table class="table premium-table table-borderless align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product Name</th>
+                                <th scope="col" class="text-center">Price</th>
+                                <th scope="col" class="text-center">Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td class="fw-bold">{{ item.product.name }}</td>
+                                <td class="text-center">₹{{ item.price }}</td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-light p-4 rounded-4 border">
+                    <h5 class="fw-bold mb-3 text-dark"><i class="bi-gear me-2"></i>Update Shipping Status</h5>
+                    <form method="POST" class="m-0">
+                        {% csrf_token %}
+                        <div class="row align-items-center">
+                            <div class="col-md-8 mb-3 mb-md-0">
+                                <select class="form-select custom-select" name="shipping_status">
+                                    <option value="false" {% if not order.shipped %}selected{% endif %}>Un-Shipped (Pending)</option>
+                                    <option value="true" {% if order.shipped %}selected{% endif %}>Shipped (Completed)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-success-premium w-100">
+                                    Save Status
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<br><br><br>
+
+{% endblock %}

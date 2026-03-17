@@ -2,140 +2,237 @@
 
 {% block content %}
 
-<header class="bg-dark py-5">
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">Product Page</h1>
-            <p class="lead fw-normal text-white-50 mb-0">
-                Here is the product page
-            </p>
+<style>
+    /* Main Product Card Background */
+    .premium-product-card {
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.06);
+        overflow: hidden;
+        background: #ffffff;
+        margin-top: 3rem;
+        position: relative;
+    }
+
+    /* Left Side: Image Presentation */
+    .product-image-wrapper {
+        background-color: #fcfcfc;
+        padding: 4rem 2rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-right: 1px solid #f0f0f0;
+    }
+    .product-image-wrapper img {
+        max-height: 450px;
+        object-fit: contain;
+        transition: transform 0.5s ease;
+    }
+    .product-image-wrapper:hover img {
+        transform: scale(1.05); /* Slight zoom on hover */
+    }
+
+    /* Right Side: Product Details */
+    .product-details-wrapper {
+        padding: 4rem 3rem;
+    }
+    .product-title {
+        font-weight: 800;
+        font-size: 2.5rem;
+        color: #2b2b2b;
+        margin-bottom: 1.5rem;
+        letter-spacing: -1px;
+    }
+    .product-desc {
+        color: #6c757d;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 2.5rem;
+    }
+
+    /* Price Styling */
+    .price-container {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .price-old {
+        color: #adb5bd;
+        font-size: 1.3rem;
+        margin-right: 12px;
+    }
+    .price-new {
+        color: #d9534f;
+        font-size: 2rem;
+        font-weight: 800;
+    }
+    .price-regular {
+        color: #2b2b2b;
+        font-size: 2rem;
+        font-weight: 800;
+    }
+
+    /* Quantity Dropdown */
+    .qty-label {
+        font-weight: 700;
+        color: #495057;
+        font-size: 1.1rem;
+    }
+    .qty-select {
+        border-radius: 12px;
+        border: 2px solid #e9ecef;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        transition: border-color 0.3s ease;
+    }
+    .qty-select:focus {
+        border-color: #212529;
+        box-shadow: none;
+    }
+
+    /* Premium Buttons */
+    .btn-premium {
+        border-radius: 30px;
+        padding: 14px 32px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        border: 2px solid #212529;
+        font-size: 0.95rem;
+    }
+    .btn-add {
+        background: #212529;
+        color: #ffffff;
+    }
+    .btn-add:hover {
+        background: #ffffff;
+        color: #212529;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .btn-back {
+        background: transparent;
+        color: #212529;
+    }
+    .btn-back:hover {
+        background: #f8f9fa;
+        transform: translateY(-3px);
+    }
+
+    /* Flash Sale Badge */
+    .sale-badge {
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        border-radius: 25px;
+        padding: 8px 18px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        box-shadow: 0 4px 10px rgba(255, 65, 108, 0.3);
+        position: absolute;
+        top: 2rem;
+        left: 2rem;
+        z-index: 2;
+        color: white;
+    }
+</style>
+
+<div class="container mb-5">
+    
+    <div class="card premium-product-card">
+        
+        {% if product.is_sale %}
+            <div class="sale-badge">Flash Sale</div>
+        {% endif %}
+
+        <div class="row g-0">
+            <div class="col-md-5 product-image-wrapper">
+                <img src="{{product.image.url}}" class="img-fluid" alt="{{product.name}}">
+            </div>
+            
+            <div class="col-md-7">
+                <div class="product-details-wrapper">
+                    
+                    <h1 class="product-title">{{product.name}}</h1>
+                    <p class="product-desc">{{product.description}}</p>
+
+                    <div class="price-container">
+                        {% if product.is_sale %}
+                            <strike class="price-old">₹{{product.price}}</strike>
+                            <span class="price-new">₹{{product.sale_price}}</span>
+                        {% else %}
+                            <span class="price-regular">₹{{product.price}}</span>
+                            <br/><small class="text-muted">Product ID: {{product.id}}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row align-items-center mb-5">
+                        <div class="col-md-3">
+                            <span class="qty-label">Quantity</span>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select qty-select" id="qty-cart">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>                                 
+                    </div>
+                    
+                    <div class="d-flex gap-3">
+                        <a class="btn btn-premium btn-back" href="{% url 'home' %}">
+                            <i class="bi-arrow-left me-2"></i>Back
+                        </a>
+                        <button type="button" class="btn btn-premium btn-add add-cart" value="{{ product.id }}">
+                            <i class="bi-cart-plus me-2"></i>Add To Cart
+                        </button>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
-</header>
-
-<div class="container">
-<div class="card mb-3" style="max-width: 540px;">
-<div class="row g-0">
-
-<div class="col-md-4">
-<img src="{{ product.image.url }}" class="img-fluid rounded-start">
 </div>
 
-<div class="col-md-8">
-<div class="card-body text-center">
-
-<h5 class="card-title">{{ product.name }}</h5>
-
-<p class="card-text">{{ product.description }}</p>
-
-{% if product.is_sales %}
-
-<div class="d-flex justify-content-center small text-warning mb-2">
-<div class="bi-star-fill"></div>
-&nbsp;&nbsp;Sale!&nbsp;&nbsp;
-<div class="bi-star-fill"></div>
-</div>
-
-<strike>₹{{ product.price }}</strike>
-&nbsp;
-<strong>₹{{ product.sale_price }}</strong>
-
-{% else %}
-
-<strong>₹{{ product.price }}</strong>
-
-{% endif %}
-
-<br><br>
-
-<!-- Quantity -->
-
-<div class="row justify-content-center align-items-center mt-3">
-
-    <div class="col-md-4 text-end">
-        <strong>Quantity:</strong>
-    </div>
-
-    <div class="col-md-3">
-        <select class="form-select" id="qty-cart">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select>
-    </div>
-
-</div>
-
-</div>
-
-<br>
-
-<a href="{% url 'home' %}" class="btn btn-secondary">
-Go Home
-</a>
-
-<button 
-type="button"
-value="{{ product.id }}"
-class="btn btn-secondary"
-id="add-cart">
-
-Add To Cart
-
-</button>
-
-</div>
-</div>
-
-</div>
-</div>
-</div>
-
-<br><br><br>
+<br/><br/>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
 <script>
+$(document).on('click', '.add-cart', function(e){
+    e.preventDefault();
+    
+    // Grab product id and quantity
+    var product_id = $(this).val();
+    var product_qty = $('#qty-cart option:selected').val();
 
-$(document).on('click', '#add-cart', function(e){
-
-e.preventDefault();
-
-$.ajax({
-
-type:'POST',
-
-url:"{% url 'cart_add' %}",
-
-data:{
-product_id:$('#add-cart').val(),
-product_qty:$('#qty-cart option:selected').text(),
-csrfmiddlewaretoken:'{{ csrf_token }}',
-action:'post'
-},
-
-success:function(json){
-
-console.log("Success:",json);
-
-alert("Product Added To Cart 🛒");
-
-document.getElementById("cart_quantity").textContent=json.qty;
-
-},
-
-error:function(xhr,errmsg,err){
-
-console.log("Error:",errmsg);
-
-}
-
+    $.ajax({
+        type: 'POST',
+        url: '{% url "cart_add" %}',
+        data: {
+            product_id: product_id,
+            product_qty: product_qty,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
+        success: function(json){
+            // Safely update navbar
+            var cartCounter = document.getElementById('cart-quantity');
+            if(cartCounter) {
+                cartCounter.textContent = json.qty;
+            }
+            alert("Item added to cart!");
+        },
+        error: function(xhr, errmsg, err){
+            console.log("ERROR:", errmsg);
+        }
+    });
 });
-
-});
-
 </script>
 
 {% endblock %}

@@ -2,59 +2,209 @@
 
 {% block content %}
 
-<!-- Header -->
-<header class="bg-dark py-5">
-    <div class="container px-4 px-lg-5 my-5">
+<style>
+/* ===============================
+   Header Styling
+================================*/
+.about-header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+    padding: 100px 0 140px 0; /* Extra bottom padding for the overlap effect */
+}
+
+.about-header h1 {
+    letter-spacing: -1px;
+    font-weight: 800;
+    animation: fadeDown 1s ease forwards;
+}
+
+.about-header p {
+    animation: fadeUp 1.2s ease forwards;
+    font-size: 1.2rem;
+    color: #a0a0a0 !important;
+}
+
+/* ===============================
+   About Card (Overlapping Effect)
+================================*/
+.about-card {
+    background: #ffffff;
+    padding: 60px 50px;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    margin-top: -80px; /* Pulls the card up into the dark header */
+    position: relative;
+    z-index: 10;
+    transition: all 0.4s ease;
+}
+
+.about-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+}
+
+.about-card h2 {
+    font-weight: 800;
+    color: #212529;
+    letter-spacing: -0.5px;
+    font-size: 2.2rem;
+}
+
+.about-card p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #6c757d;
+}
+
+/* ===============================
+   Feature List
+================================*/
+.feature-list {
+    text-align: left;
+    margin-top: 2rem;
+}
+
+.feature-list .list-group-item {
+    border: 1px solid #f1f3f5;
+    background: #fdfdfd;
+    font-weight: 500;
+    padding: 16px 24px;
+    margin-bottom: 12px;
+    border-radius: 16px !important;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    color: #495057;
+    transition: all 0.3s ease;
+}
+
+.feature-list .list-group-item:hover {
+    background: #ffffff;
+    transform: translateX(8px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+    border-color: #e9ecef;
+    color: #212529;
+}
+
+/* Custom Icon Styling */
+.feature-icon {
+    font-size: 1.4rem;
+    color: #212529;
+    background: #f8f9fa;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.feature-list .list-group-item:hover .feature-icon {
+    background: #212529;
+    color: #ffffff;
+}
+
+/* Divider */
+.custom-divider {
+    width: 60px;
+    margin: 40px auto;
+    border: 3px solid #212529;
+    border-radius: 10px;
+    opacity: 1;
+}
+
+/* ===============================
+   Animations
+================================*/
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile Optimization */
+@media(max-width: 768px) {
+    .about-card { padding: 40px 25px; margin-top: -50px; }
+    .about-header { padding: 60px 0 100px 0; }
+    .about-header h1 { font-size: 2.2rem; }
+}
+</style>
+
+<header class="about-header">
+    <div class="container px-4 px-lg-5">
         <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">About Our Store</h1>
-            <p class="lead fw-normal text-white-50 mb-0">
-                Learn more about our e-commerce platform
-            </p>
+            <h1 class="display-4">About Our Store</h1>
+            <p class="mb-0">Learn more about our e-commerce platform</p>
         </div>
     </div>
 </header>
 
-<!-- About Section -->
-<section class="py-5">
+<section class="pb-5 bg-light">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
+            <div class="col-lg-8">
 
-                <h2 class="fw-bold mb-4">Welcome to CodeMac Store</h2>
+                <div class="about-card text-center">
 
-                <p class="lead text-muted">
-                    CodeMac Store is a modern e-commerce platform designed to provide a simple,
-                    fast, and secure online shopping experience. Our goal is to make it easy for
-                    customers to explore products and purchase them conveniently from anywhere.
-                </p>
+                    <h2 class="mb-4">Welcome to CodeMac Store</h2>
 
-                <p class="text-muted">
-                    We offer a variety of products across different categories. Each product on our
-                    platform is carefully listed to ensure quality and reliability. Our platform is
-                    built with modern web technologies to deliver a smooth and responsive user
-                    experience.
-                </p>
+                    <p class="lead">
+                        CodeMac Store is a modern e-commerce platform designed to provide a simple,
+                        fast, and secure online shopping experience. Our goal is to make it easy for
+                        customers to explore products and purchase them conveniently from anywhere.
+                    </p>
 
-                <hr class="my-4">
+                    <p>
+                        We offer a variety of products across different categories. Each product on our
+                        platform is carefully listed to ensure quality and reliability. Our platform is
+                        built with modern web technologies to deliver a smooth and responsive user
+                        experience.
+                    </p>
 
-                <h4 class="fw-bold mb-3">What We Provide</h4>
+                    <hr class="custom-divider">
 
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">🛒 Easy and user-friendly online shopping</li>
-                    <li class="list-group-item">📦 Wide range of products</li>
-                    <li class="list-group-item">🔒 Secure transactions</li>
-                    <li class="list-group-item">⚡ Fast and responsive website experience</li>
-                    <li class="list-group-item">💬 Reliable customer support</li>
-                </ul>
+                    <h4 class="fw-bold mb-4 text-dark">What We Provide</h4>
 
-                <p class="mt-4 text-muted">
-                    Our mission is to create a reliable and efficient digital marketplace
-                    where customers can discover and purchase products with confidence.
-                </p>
+                    <ul class="list-group list-group-flush feature-list">
+                        <li class="list-group-item">
+                            <div class="feature-icon"><i class="bi-cart-check"></i></div>
+                            Easy and user-friendly online shopping
+                        </li>
+                        <li class="list-group-item">
+                            <div class="feature-icon"><i class="bi-box-seam"></i></div>
+                            Wide range of products
+                        </li>
+                        <li class="list-group-item">
+                            <div class="feature-icon"><i class="bi-shield-check"></i></div>
+                            Secure transactions
+                        </li>
+                        <li class="list-group-item">
+                            <div class="feature-icon"><i class="bi-lightning-charge"></i></div>
+                            Fast and responsive website experience
+                        </li>
+                        <li class="list-group-item">
+                            <div class="feature-icon"><i class="bi-chat-dots"></i></div>
+                            Reliable customer support
+                        </li>
+                    </ul>
+
+                    <p class="mt-5 text-muted small">
+                        Our mission is to create a reliable and efficient digital marketplace
+                        where customers can discover and purchase products with confidence.
+                    </p>
+
+                </div>
 
             </div>
         </div>
     </div>
 </section>
+
+<br><br><br>
 
 {% endblock %}

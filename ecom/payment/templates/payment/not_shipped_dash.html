@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* ===============================
+   Header Styling
+================================*/
+.admin-header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+    padding: 100px 0 140px 0; /* Extra padding for overlap effect */
+}
+
+.admin-header h1 {
+    letter-spacing: -1px;
+    font-weight: 800;
+    animation: fadeDown 1s ease forwards;
+}
+
+.admin-header p {
+    animation: fadeUp 1.2s ease forwards;
+    color: #a0a0a0 !important;
+}
+
+/* ===============================
+   Premium Card (Overlapping Effect)
+================================*/
+.admin-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    margin-top: -80px; /* Pulls the card up into the dark header */
+    position: relative;
+    z-index: 10;
+    padding: 40px;
+}
+
+/* ===============================
+   Premium Table Styling
+================================*/
+.table-wrapper {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+}
+
+.premium-table {
+    margin-bottom: 0;
+}
+
+.premium-table thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 18px 20px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.premium-table tbody td {
+    padding: 18px 20px;
+    vertical-align: middle;
+    color: #212529;
+    font-weight: 500;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+.premium-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.premium-table tbody tr:hover {
+    background-color: #fcfcfc;
+    transform: scale(1.01);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+.order-link {
+    font-weight: 800;
+    color: #0d6efd;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.order-link:hover {
+    color: #0043a8;
+    text-decoration: underline;
+}
+
+/* ===============================
+   Action Button
+================================*/
+.btn-success-premium {
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #198754, #146c43);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(25, 135, 84, 0.2);
+}
+
+.btn-success-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(25, 135, 84, 0.3);
+    color: white;
+}
+
+.btn-success-premium:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+/* Animations */
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<header class="admin-header text-center">
+    <div class="container px-4 px-lg-5">
+        <h1 class="display-4 text-white">Un-Shipped Orders</h1>
+        <p class="lead fw-normal mb-0">These orders need to be packaged and mailed!</p>
+    </div>
+</header>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+
+            <div class="card admin-card">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold text-dark mb-0">Pending Shipments</h4>
+                    <span class="badge bg-danger rounded-pill px-3 py-2" style="font-size: 0.85rem;">Action Required</span>
+                </div>
+
+                <div class="table-responsive table-wrapper">
+                    <table class="table premium-table table-borderless align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Customer Email</th>
+                                <th scope="col">Date Ordered</th>
+                                <th scope="col" class="text-end">Action</th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'orders' order.id %}" class="order-link">
+                                        #{{ order.id }}
+                                    </a>
+                                </td>
+                                <td class="fw-bold text-dark">₹{{ order.amount_paid }}</td>
+                                <td class="text-muted">{{ order.email }}</td>
+                                <td>{{ order.date_ordered }}</td>
+                                <td class="text-end">
+                                    <form method="POST" class="m-0 p-0">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="num" value="{{ order.id }}">
+                                        <button type="submit" class="btn btn-success-premium">
+                                            <i class="bi-box-seam me-1"></i> Mark Shipped
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi-check-circle display-4 d-block mb-3 text-success" style="opacity: 0.5;"></i>
+                                    <h5>All caught up!</h5>
+                                    <p>There are no un-shipped orders at the moment.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<br><br><br>
+
+{% endblock %}

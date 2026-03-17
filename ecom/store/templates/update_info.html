@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* ===============================
+   Header Styling
+================================*/
+.update-header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+    padding: 100px 0 140px 0; /* Extra padding for overlap effect */
+}
+
+.update-header h1 {
+    letter-spacing: -1px;
+    font-weight: 800;
+    animation: fadeDown 1s ease forwards;
+}
+
+.update-header p {
+    animation: fadeUp 1.2s ease forwards;
+    color: #a0a0a0 !important;
+}
+
+/* ===============================
+   Update Card (Overlapping Effect)
+================================*/
+.update-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    margin-top: -80px; /* Pulls the card up into the dark header */
+    position: relative;
+    z-index: 10;
+    transition: all 0.4s ease;
+}
+
+.update-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+}
+
+/* ===============================
+   Section Titles
+================================*/
+.section-title {
+    font-weight: 800;
+    color: #212529;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+/* ===============================
+   Styling Django's Auto-Forms
+================================*/
+.update-card p {
+    margin-bottom: 20px;
+}
+
+/* Targets the labels Django generates */
+.update-card label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Targets the inputs/selects Django generates */
+.update-card input, 
+.update-card select, 
+.update-card textarea {
+    display: block;
+    width: 100%;
+    border-radius: 14px;
+    padding: 14px 18px;
+    border: 2px solid #e9ecef;
+    background-color: #fcfcfc;
+    font-weight: 500;
+    font-size: 1rem;
+    color: #212529;
+    transition: all 0.3s ease;
+}
+
+.update-card input:focus, 
+.update-card select:focus, 
+.update-card textarea:focus {
+    border-color: #212529;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(33, 37, 41, 0.08);
+    outline: none;
+}
+
+/* Error text styling */
+.update-card ul.errorlist {
+    color: #dc3545;
+    font-size: 0.85rem;
+    list-style: none;
+    padding-left: 0;
+    margin-top: 5px;
+}
+
+/* ===============================
+   Premium Button
+================================*/
+.btn-premium {
+    border-radius: 30px;
+    padding: 14px 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #212529, #000);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    width: 100%; /* Makes button stretch full width */
+}
+
+.btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    color: white;
+}
+
+.btn-premium:active, .btn-premium:focus {
+    background: #000 !important;
+    color: white !important; 
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.2) !important;
+    outline: none !important;
+    transform: translateY(1px);
+}
+
+/* ===============================
+   Animations
+================================*/
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<header class="update-header text-center">
+    <div class="container px-4 px-lg-5">
+        <h1 class="display-4 text-white">Update User Info</h1>
+        <p class="lead fw-normal mb-0">Update your billing and shipping details</p>
+    </div>
+</header>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+
+            <div class="card update-card">
+                <div class="card-body p-5">
+
+                    <form method="POST" action="{% url 'update_info' %}">
+                        {% csrf_token %}
+
+                        {% if form.errors %}
+                        <div class="alert alert-danger" style="border-radius: 12px; font-size: 0.9rem;">
+                            {{ form.errors }}
+                        </div>
+                        {% endif %}
+
+                        <div class="section-title mt-2">Billing Info</div>
+                        {{ form.as_p }}
+
+                        <div class="section-title mt-5">Shipping Info</div>
+                        {{ shipping_form.as_p }}
+                        
+                        <div class="mt-5">
+                            <button type="submit" class="btn btn-premium btn-lg">
+                                Save Changes
+                            </button>
+                        </div>
+                        
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<br><br>
+
+{% endblock %}

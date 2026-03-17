@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* ===============================
+   Header Styling
+================================*/
+.profile-header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+    padding: 100px 0 140px 0; /* Extra padding for overlap effect */
+}
+
+.profile-header h1 {
+    letter-spacing: -1px;
+    font-weight: 800;
+    animation: fadeDown 1s ease forwards;
+}
+
+.profile-header p {
+    animation: fadeUp 1.2s ease forwards;
+    color: #a0a0a0 !important;
+}
+
+/* ===============================
+   Profile Card (Overlapping Effect)
+================================*/
+.profile-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    margin-top: -80px; /* Pulls the card up into the dark header */
+    position: relative;
+    z-index: 10;
+    transition: all 0.4s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+}
+
+/* ===============================
+   Styling Django's Auto-Forms
+================================*/
+.profile-card p {
+    margin-bottom: 20px;
+}
+
+/* Targets the labels Django generates */
+.profile-card label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Targets the inputs Django generates (Forced Override to beat Bootstrap) */
+.profile-card input[type="text"],
+.profile-card input[type="email"],
+.profile-card input[type="password"],
+.profile-card select,
+.profile-card textarea {
+    display: block !important;
+    width: 100% !important;
+    border-radius: 14px !important;
+    padding: 14px 18px !important;
+    border: 2px solid #e9ecef !important;
+    background-color: #fcfcfc !important;
+    font-weight: 500 !important;
+    font-size: 1rem !important;
+    color: #212529 !important;
+    transition: all 0.3s ease !important;
+    margin-bottom: 10px !important;
+}
+
+.profile-card input:focus,
+.profile-card select:focus,
+.profile-card textarea:focus {
+    border-color: #212529 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(33, 37, 41, 0.08) !important;
+    outline: none !important;
+}
+
+.profile-card .helptext {
+    font-size: 0.8rem;
+    color: #868e96;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Error text styling */
+.profile-card ul.errorlist {
+    color: #dc3545;
+    font-size: 0.85rem;
+    list-style: none;
+    padding-left: 0;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+/* ===============================
+   Premium Buttons
+================================*/
+.btn-premium {
+    border-radius: 30px;
+    padding: 14px 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #212529, #000);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    color: white;
+}
+
+.btn-premium:active, .btn-premium:focus {
+    background: #000 !important;
+    color: white !important; 
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.2) !important;
+    outline: none !important;
+    transform: translateY(1px);
+}
+
+/* Secondary outline button for Password Update */
+.btn-outline-premium {
+    border-radius: 30px;
+    padding: 12px 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: transparent;
+    color: #212529;
+    border: 2px solid #212529;
+    transition: all 0.3s ease;
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-outline-premium:hover {
+    background: #212529;
+    color: #ffffff;
+    box-shadow: 0 5px 15px rgba(33, 37, 41, 0.2);
+}
+
+/* ===============================
+   Animations
+================================*/
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<header class="profile-header text-center">
+    <div class="container px-4 px-lg-5">
+        <h1 class="display-4 text-white">Update Profile</h1>
+        <p class="lead fw-normal mb-0">Manage your account details</p>
+    </div>
+</header>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card profile-card">
+                <div class="card-body p-5">
+
+                    <h3 class="text-center mb-4 fw-bold text-dark">Personal Information</h3>
+
+                    <form method="POST" action="{% url 'update_user' %}">
+                        {% csrf_token %}
+
+                        {% if user_form.errors %}
+                        <div class="alert alert-danger" style="border-radius: 12px; font-size: 0.9rem;">
+                            {{ user_form.errors }}
+                        </div>
+                        {% endif %}
+
+                        {{ user_form.as_p }}
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-premium">
+                                Save Profile
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-5" style="opacity: 0.1;">
+
+                    <div class="text-center">
+                        <h6 class="text-muted text-uppercase fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">Security</h6>
+                        <a href="{% url 'update_password' %}" class="btn btn-outline-premium">
+                            Change Password
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<br><br><br>
+
+{% endblock %}

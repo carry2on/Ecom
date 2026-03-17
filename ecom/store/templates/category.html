@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* ===============================
+   Header Styling
+================================*/
+.category-header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+    padding: 100px 0 140px 0; /* Extra padding for overlap effect */
+}
+
+.category-header h1 {
+    letter-spacing: -1px;
+    font-weight: 800;
+    text-transform: capitalize;
+    animation: fadeDown 1s ease forwards;
+}
+
+.category-header p {
+    animation: fadeUp 1.2s ease forwards;
+    color: #a0a0a0 !important;
+}
+
+/* ===============================
+   Card Grid (Overlapping Effect)
+================================*/
+.category-container {
+    margin-top: -80px; /* Pulls the grid up into the dark header */
+    position: relative;
+    z-index: 10;
+}
+
+/* ===============================
+   Product Cards & Images
+================================*/
+.premium-card {
+    border: 1px solid #f0f0f0;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: #fff;
+}
+
+.premium-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    border-color: #e8e8e8;
+}
+
+.img-container {
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    padding: 1.5rem;
+    background-color: #fcfcfc;
+}
+
+.product-img {
+    height: 220px;
+    width: 100%;
+    object-fit: contain;
+    transition: transform 0.5s ease;
+}
+
+.premium-card:hover .product-img {
+    transform: scale(1.08); /* Zoom effect on hover */
+}
+
+/* ===============================
+   Typography & Pricing
+================================*/
+.product-title {
+    font-weight: 700;
+    color: #2b2b2b;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.price-old {
+    color: #adb5bd;
+    font-size: 0.95rem;
+    margin-right: 5px;
+}
+
+.price-new {
+    color: #d9534f;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.price-regular {
+    color: #2b2b2b;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+/* ===============================
+   Sale Badge
+================================*/
+.sale-badge {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    border-radius: 25px;
+    padding: 6px 14px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(255, 65, 108, 0.3);
+    z-index: 2;
+}
+
+/* ===============================
+   Premium Button
+================================*/
+.btn-premium {
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border: 2px solid #212529;
+    background: transparent;
+    color: #212529;
+}
+
+.btn-premium:hover {
+    background: #212529;
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(33, 37, 41, 0.2);
+}
+
+.btn-premium:active, .btn-premium:focus {
+    background: #000 !important;
+    color: white !important; 
+    outline: none !important;
+}
+
+/* Animations */
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<header class="category-header text-center">
+    <div class="container px-4 px-lg-5">
+        <h1 class="display-4 text-white">{{ category.name }}</h1>
+        <p class="lead fw-normal mb-0">Browse our {{ category.name }} collection</p>
+    </div>
+</header>
+
+<section class="pb-5 bg-light">
+    <div class="container px-4 px-lg-5 category-container">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            
+            {% if products %}
+                {% for product in products %}
+                    
+                    {% if product.is_sales %}
+                    <div class="col mb-5">
+                        <div class="card h-100 premium-card position-relative">
+                            
+                            <div class="badge text-white position-absolute sale-badge" style="top: 1rem; right: 1rem">Flash Sale</div>
+                            
+                            <div class="img-container">
+                                <img class="card-img-top product-img" src="{{ product.image.url }}" alt="{{ product.name }}" />
+                            </div>
+                            
+                            <div class="card-body p-4 text-center">
+                                <h5 class="product-title">{{ product.name }}</h5>
+                                <div class="mt-2">
+                                    <strike class="price-old">₹{{ product.price }}</strike>
+                                    <span class="price-new">₹{{ product.sale_price }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent text-center">
+                                <a class="btn btn-premium w-100" href="{% url 'product' product.id %}">View Product</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col mb-5">
+                        <div class="card h-100 premium-card">
+                            
+                            <div class="img-container">
+                                <img class="card-img-top product-img" src="{{ product.image.url }}" alt="{{ product.name }}" />
+                            </div>
+                            
+                            <div class="card-body p-4 text-center">
+                                <h5 class="product-title">{{ product.name }}</h5>
+                                <div class="mt-2">
+                                    <span class="price-regular">₹{{ product.price }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent text-center">
+                                <a class="btn btn-premium w-100" href="{% url 'product' product.id %}">View Product</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                {% endfor %}
+
+            {% else %}
+                <div class="col-12 text-center">
+                    <div class="card premium-card p-5 mt-4" style="border-radius: 24px;">
+                        <h3 class="fw-bold text-dark mb-0">There are no products in this category yet!</h3>
+                        <p class="mt-3 text-muted">Check back later for exciting new arrivals.</p>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}
