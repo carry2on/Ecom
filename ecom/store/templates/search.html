@@ -2,78 +2,259 @@
 
 {% block content %}
 
-<header class="bg-dark py-5">
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">Search Products</h1>
-            <p class="lead fw-normal text-white-50 mb-0">Find exactly what you are looking for...</p>
-        </div>
+<style>
+/* ===============================
+   Header Styling
+================================*/
+.search-header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+    padding: 100px 0 140px 0; /* Extra padding for overlap effect */
+}
+
+.search-header h1 {
+    letter-spacing: -1px;
+    font-weight: 800;
+    animation: fadeDown 1s ease forwards;
+}
+
+.search-header p {
+    animation: fadeUp 1.2s ease forwards;
+    color: #a0a0a0 !important;
+}
+
+/* ===============================
+   Layout & Overlap
+================================*/
+.search-container {
+    margin-top: -80px; /* Pulls the grid up into the dark header */
+    position: relative;
+    z-index: 10;
+}
+
+/* ===============================
+   Search Form Card
+================================*/
+.search-form-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    padding: 40px;
+    margin-bottom: 50px;
+    transition: all 0.3s ease;
+}
+
+.search-input {
+    display: block !important;
+    width: 100% !important;
+    border-radius: 16px !important;
+    padding: 18px 24px !important;
+    border: 2px solid #e9ecef !important;
+    background-color: #fcfcfc !important;
+    font-weight: 500 !important;
+    font-size: 1.15rem !important;
+    color: #212529 !important;
+    transition: all 0.3s ease !important;
+}
+
+.search-input:focus {
+    border-color: #212529 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(33, 37, 41, 0.08) !important;
+    outline: none !important;
+}
+
+/* ===============================
+   Product Cards
+================================*/
+.premium-product-card {
+    border: 1px solid #f0f0f0;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: #fff;
+    overflow: hidden;
+}
+
+.premium-product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    border-color: #e8e8e8;
+}
+
+.img-container {
+    overflow: hidden;
+    background-color: #fcfcfc;
+    padding: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.product-img {
+    height: 200px;
+    width: 100%;
+    object-fit: contain;
+    transition: transform 0.5s ease;
+}
+
+.premium-product-card:hover .product-img {
+    transform: scale(1.08); /* Zoom effect on hover */
+}
+
+/* ===============================
+   Typography & Pricing
+================================*/
+.product-title {
+    font-weight: 700;
+    color: #2b2b2b;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.price-old {
+    color: #adb5bd;
+    font-size: 0.95rem;
+    margin-right: 5px;
+    text-decoration: line-through;
+}
+
+.price-new {
+    color: #d9534f;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.price-regular {
+    color: #2b2b2b;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+/* ===============================
+   Buttons
+================================*/
+.btn-premium {
+    border-radius: 30px;
+    padding: 16px 28px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 1rem;
+    background: linear-gradient(135deg, #212529, #000);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-premium:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.25); color: white; }
+
+.btn-outline-premium {
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border: 2px solid #212529;
+    background: transparent;
+    color: #212529;
+    width: 100%;
+}
+
+.btn-outline-premium:hover { background: #212529; color: #fff; box-shadow: 0 5px 15px rgba(33, 37, 41, 0.2); }
+
+/* Animations */
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<header class="search-header text-center">
+    <div class="container px-4 px-lg-5">
+        <h1 class="display-4 text-white">Search Products</h1>
+        <p class="lead fw-normal mb-0">Find exactly what you are looking for</p>
     </div>
 </header>
 
-<div class="container py-5">
-    <div class="row">
-        
-        <div class="col-md-6 offset-md-3 mb-5">
-            <div class="card shadow">
-                <div class="card-header bg-secondary text-white">
-                    Search Products
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="{% url 'search' %}">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <input type="text" 
-                                   class="form-control"
-                                   placeholder="Search For Products"
-                                   name="searched"
-                                   value="{{ searched|default_if_none:'' }}">
-                        </div>
-                        <button type="submit" class="btn btn-secondary">
-                            Search Products
-                        </button>
-                    </form>
-                </div>
+<div class="container pb-5 search-container">
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="search-form-card">
+                <form method="POST" action="{% url 'search' %}">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <input type="text" 
+                               class="search-input text-center"
+                               placeholder="What are you looking for?"
+                               name="searched"
+                               value="{{ searched|default_if_none:'' }}">
+                    </div>
+                    <button type="submit" class="btn btn-premium w-100">
+                        <i class="bi-search me-2"></i> Search Store
+                    </button>
+                </form>
             </div>
         </div>
-        
+    </div>
+
+    {% if searched %}
+    
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h5 class="text-muted text-uppercase fw-bold" style="letter-spacing: 1px; font-size: 0.9rem;">Search Results For</h5>
+            <h2 class="fw-bolder text-dark">"{{ searched }}"</h2>
+        </div>
     </div>
 
     <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-        {% if searched %}
-            {% for product in searched_products %}
-                <div class="col mb-5">
-                    <div class="card h-100 shadow-sm">
-                        <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}" />
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <h5 class="fw-bolder">{{ product.name }}</h5>
-                                
-                                {% if product.is_sales %}
-                                    <strike>${{ product.price }}</strike> 
-                                    <span class="text-danger fw-bold">${{ product.sale_price }}</span>
-                                {% else %}
-                                    ${{ product.price }}
-                                {% endif %}
-                                
-                            </div>
+        
+        {% for product in searched_products %}
+            <div class="col mb-5">
+                <div class="card h-100 premium-product-card position-relative">
+                    
+                    {% if product.is_sales %}
+                        <div class="badge text-white position-absolute" style="background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); top: 1rem; right: 1rem; z-index: 2; border-radius: 20px; padding: 6px 12px; font-size: 0.7rem; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">
+                            Sale
                         </div>
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center">
-                                <a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">View Product</a>
-                            </div>
+                    {% endif %}
+                    
+                    <div class="img-container">
+                        <img class="product-img" src="{{ product.image.url }}" alt="{{ product.name }}" />
+                    </div>
+                    
+                    <div class="card-body p-4 text-center">
+                        <h5 class="product-title">{{ product.name }}</h5>
+                        <div class="mt-2">
+                            {% if product.is_sales %}
+                                <span class="price-old">₹{{ product.price }}</span>
+                                <span class="price-new">₹{{ product.sale_price }}</span>
+                            {% else %}
+                                <span class="price-regular">₹{{ product.price }}</span>
+                            {% endif %}
                         </div>
                     </div>
+                    
+                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent text-center">
+                        <a class="btn btn-outline-premium" href="{% url 'product' product.id %}">View Product</a>
+                    </div>
+                    
                 </div>
-                
-            {% empty %}
-                <div class="col-12 text-center mt-4">
-                    <h3>Sorry, no products found for "{{ searched }}"...</h3>
-                </div>
-            {% endfor %}
+            </div>
             
-        {% endif %}
+        {% empty %}
+            <div class="col-md-8 mx-auto text-center mt-3">
+                <div class="card search-form-card shadow-sm border-0 py-5" style="background-color: #f8f9fa;">
+                    <div class="mb-4" style="font-size: 3.5rem; color: #dee2e6;">
+                        <i class="bi-emoji-frown"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-3">No products found</h3>
+                    <p class="text-muted mb-0">We couldn't find anything matching "<span class="fw-bold">{{ searched }}</span>".<br>Try checking for typos or searching with different keywords.</p>
+                </div>
+            </div>
+        {% endfor %}
+        
     </div>
+    {% endif %}
+
 </div>
 <br><br>
 

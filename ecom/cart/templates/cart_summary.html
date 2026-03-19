@@ -8,7 +8,7 @@
 ================================*/
 .cart-header {
     background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
-    padding: 100px 0 140px 0; /* Extra padding for overlap effect */
+    padding: 100px 0 140px 0; 
 }
 
 .cart-header h1 {
@@ -26,7 +26,7 @@
    Layout & Overlap
 ================================*/
 .cart-container {
-    margin-top: -80px; /* Pulls the grid up into the dark header */
+    margin-top: -80px; 
     position: relative;
     z-index: 10;
 }
@@ -233,11 +233,21 @@
             </div>
             {% endfor %}
 
-            <div class="summary-box mt-5 text-end shadow-sm">
-                <h4 class="fw-bold text-muted mb-2 text-uppercase" style="font-size: 1rem; letter-spacing: 1px;">Subtotal</h4>
-                <h2 class="fw-bolder text-dark mb-4 display-6">₹{{ totals }}</h2>
+            <div class="summary-box mt-5 shadow-sm">
                 
-                <div class="d-flex justify-content-end gap-3 flex-wrap">
+                <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-4">
+                    <div class="text-start">
+                        <h4 class="fw-bold text-muted mb-2 text-uppercase" style="font-size: 1rem; letter-spacing: 1px;">Total Items</h4>
+                        <h2 class="fw-bolder text-dark mb-0 display-6 text-primary">{{ cart|length }}</h2>
+                    </div>
+                    
+                    <div class="text-end">
+                        <h4 class="fw-bold text-muted mb-2 text-uppercase" style="font-size: 1rem; letter-spacing: 1px;">Subtotal</h4>
+                        <h2 class="fw-bolder text-dark mb-0 display-6">₹{{ totals }}</h2>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-3 flex-wrap pt-2">
                     <a href="{% url 'home' %}" class="btn btn-outline-premium">
                         <i class="bi-arrow-left me-2"></i>Continue Shopping
                     </a>

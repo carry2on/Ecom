@@ -145,7 +145,7 @@
     
     <div class="card premium-product-card">
         
-        {% if product.is_sale %}
+        {% if product.is_sales %}
             <div class="sale-badge">Flash Sale</div>
         {% endif %}
 
@@ -161,7 +161,7 @@
                     <p class="product-desc">{{product.description}}</p>
 
                     <div class="price-container">
-                        {% if product.is_sale %}
+                        {% if product.is_sales %}
                             <strike class="price-old">₹{{product.price}}</strike>
                             <span class="price-new">₹{{product.sale_price}}</span>
                         {% else %}
@@ -182,7 +182,7 @@
                                 <option value="4">4</option>
                                 <option value="5">5</option>
                             </select>
-                        </div>                                 
+                        </div>                                
                     </div>
                     
                     <div class="d-flex gap-3">

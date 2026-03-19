@@ -3,18 +3,47 @@
     /* Main Navbar Bar */
     .navbar-premium {
         background-color: #ffffff !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Soft shadow underneath */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         padding-top: 12px;
         padding-bottom: 12px;
     }
 
     /* Brand / Logo */
     .brand-premium {
-        font-weight: 800;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        transition: transform 0.3s ease;
+    }
+    
+    .brand-premium:hover {
+        transform: scale(1.02);
+    }
+
+    .logo-icon {
+        font-size: 1.8rem;
+        margin-right: 8px;
+        background: linear-gradient(135deg, #212529 0%, #434343 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.1));
+    }
+
+    .logo-text {
+        font-weight: 900;
         font-size: 1.6rem;
-        letter-spacing: -0.5px;
-        color: #212529 !important;
-        text-transform: lowercase; /* Matches the sleek "macstore" look */
+        letter-spacing: -1px;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%); 
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .logo-text::after {
+        content: '.';
+        color: #d9534f;
+        -webkit-text-fill-color: #d9534f;
     }
 
     /* Navigation Links */
@@ -26,7 +55,7 @@
         font-size: 0.95rem;
     }
     .nav-link-premium:hover {
-        color: #d9534f !important; /* Matches the red sale text from your homepage */
+        color: #d9534f !important;
     }
 
     /* Dropdown Menus */
@@ -35,7 +64,7 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         border-radius: 14px;
         padding: 10px 0;
-        margin-top: 15px; /* Pushes it down slightly for breathing room */
+        margin-top: 15px; 
         animation: fadeIn 0.3s ease;
     }
     .dropdown-item-premium {
@@ -47,7 +76,52 @@
     .dropdown-item-premium:hover {
         background-color: #fcfcfc;
         color: #d9534f;
-        padding-left: 28px; /* Slight indent effect on hover */
+        padding-left: 28px; 
+    }
+
+    /* ===============================
+        Navbar Search Bar
+    ================================*/
+    .search-form-nav {
+        width: 100%;
+        max-width: 400px; /* Keeps the search bar from getting too wide */
+    }
+    
+    .search-input-nav {
+        border-radius: 30px 0 0 30px !important;
+        border: 2px solid #e9ecef;
+        border-right: none;
+        padding: 8px 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        background-color: #f8f9fa;
+        box-shadow: none !important;
+        transition: all 0.3s ease;
+    }
+    
+    .search-input-nav:focus {
+        border-color: #212529 !important;
+        background-color: #ffffff;
+    }
+    
+    .btn-search-nav {
+        border-radius: 0 30px 30px 0 !important;
+        border: 2px solid #e9ecef;
+        border-left: none;
+        background-color: #f8f9fa;
+        color: #6c757d;
+        padding: 8px 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .search-input-nav:focus + .btn-search-nav {
+        border-color: #212529 !important;
+        background-color: #ffffff;
+        color: #212529;
+    }
+
+    .btn-search-nav:hover {
+        color: #212529;
     }
 
     /* Cart Button */
@@ -69,13 +143,11 @@
         box-shadow: 0 4px 12px rgba(33, 37, 41, 0.2);
     }
     
-    /* Inverts the badge colors when hovering over the cart button */
     .btn-cart-premium:hover .badge {
         background-color: #ffffff !important;
         color: #212529 !important;
     }
 
-    /* Small fade-in animation for dropdowns */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-10px); }
         to { opacity: 1; transform: translateY(0); }
@@ -84,17 +156,51 @@
 
 <nav class="navbar navbar-expand-lg navbar-premium sticky-top">
     <div class="container px-4 px-lg-5">
-<a class="navbar-brand brand-premium d-flex align-items-center" href="{% url 'home' %}">
-    <img src="{% static 'images/macstore-logo.png' %}" alt="MacStore Logo" height="40" class="me-2">
-</a>        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        
+        <a class="navbar-brand brand-premium" href="{% url 'home' %}">
+            <i class="bi-lightning-charge-fill logo-icon"></i>
+            <span class="logo-text">MacCode</span>
+        </a> 
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
                 <li class="nav-item"><a class="nav-link nav-link-premium" href="{% url 'home' %}">Home</a></li>
                 <li class="nav-item"><a class="nav-link nav-link-premium" href="{% url 'about' %}">About</a></li>
-                <li class="nav-item"><a class="nav-link nav-link-premium" href="{% url 'search' %}">Search</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle nav-link-premium" id="navbarDropdown1" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
+                    <ul class="dropdown-menu dropdown-menu-premium" aria-labelledby="navbarDropdown1">
+                        <li><a class="dropdown-item dropdown-item-premium" href="{% url 'category_summary' %}">All Categories</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item dropdown-item-premium" href="#!">Popular Items</a></li>
+                        <li><a class="dropdown-item dropdown-item-premium" href="#!">New Arrivals</a></li>
+                    </ul>
+                </li>
+            </ul>
 
+            <form class="d-flex mx-auto my-3 my-lg-0 search-form-nav" method="POST" action="{% url 'search' %}">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input class="form-control search-input-nav" type="search" placeholder="Search products..." aria-label="Search" name="searched" required>
+                    <button class="btn btn-search-nav" type="submit">
+                        <i class="bi-search"></i>
+                    </button>
+                </div>
+            </form>
+            
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
                 {% if user.is_authenticated %}
+                
+                <li class="nav-item">
+                    <a class="nav-link nav-link-premium fw-bold" style="color: #0d6efd !important;" href="{% url 'my_orders' %}">
+                        <i class="bi-box-seam me-1"></i> My Orders
+                    </a>
+                </li>
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle nav-link-premium" id="profileDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Profile</a>
                     <ul class="dropdown-menu dropdown-menu-premium" aria-labelledby="profileDropdown">
@@ -115,41 +221,21 @@
                 </li>
                 {% endif %}
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle nav-link-premium" id="navbarDropdown1" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
-                    <ul class="dropdown-menu dropdown-menu-premium" aria-labelledby="navbarDropdown1">
-                        <li><a class="dropdown-item dropdown-item-premium" href="{% url 'category_summary' %}">All Categories</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item dropdown-item-premium" href="#!">Popular Items</a></li>
-                        <li><a class="dropdown-item dropdown-item-premium" href="#!">New Arrivals</a></li>
-                    </ul>
-                </li>
-
                 <li class="nav-item"><a class="nav-link nav-link-premium" href="{% url 'logout' %}">Logout</a></li>
                 
                 {% else %}
                 <li class="nav-item"><a class="nav-link nav-link-premium" href="{% url 'login' %}">Login</a></li>
                 <li class="nav-item"><a class="nav-link nav-link-premium" href="{% url 'register' %}">Register</a></li>
-                
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle nav-link-premium" id="navbarDropdown2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
-                    <ul class="dropdown-menu dropdown-menu-premium" aria-labelledby="navbarDropdown2">
-                        <li><a class="dropdown-item dropdown-item-premium" href="{% url 'category_summary' %}">All Categories</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item dropdown-item-premium" href="#!">Popular Items</a></li>
-                        <li><a class="dropdown-item dropdown-item-premium" href="#!">New Arrivals</a></li>
-                    </ul>
-                </li>
                 {% endif %}
             </ul>
             
-            <form class="d-flex">
-                <a href="{% url 'cart_summary' %}" class="btn btn-cart-premium">               
+            <div class="d-flex ms-lg-3 mt-3 mt-lg-0">
+                <a href="{% url 'cart_summary' %}" class="btn btn-cart-premium w-100 justify-content-center">               
                     <i class="bi-cart-fill"></i>
                     Cart
                     <span class="badge bg-dark text-white rounded-pill" id="cart-quantity">{{ cart|length }}</span>
                 </a>
-            </form>
+            </div>
             
         </div>
     </div>

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% comment %}
 {% block content %}
 
 <style>
@@ -254,6 +254,20 @@
                             <div class="info-data mb-0">{{ shipping_info.shipping_country }}</div>
                         </div>
                     </div>
+
+                    <div class="mt-4 pt-3 border-top text-end">
+                        <button type="button" id="copyShippingBtn" class="btn btn-outline-premium btn-sm"
+                                data-name="{{ shipping_info.shipping_full_name }}"
+                                data-address1="{{ shipping_info.shipping_address1 }}"
+                                data-address2="{{ shipping_info.shipping_address2 }}"
+                                data-city="{{ shipping_info.shipping_city }}"
+                                data-state="{{ shipping_info.shipping_state }}"
+                                data-zip="{{ shipping_info.shipping_zipcode }}"
+                                data-country="{{ shipping_info.shipping_country }}">
+                            <i class="bi-arrow-down-circle me-1"></i> Use as Billing Address
+                        </button>
+                    </div>
+
                 </div>
             </div>
 
@@ -287,103 +301,333 @@
 
 <br><br><br>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const copyBtn = document.getElementById("copyShippingBtn");
+        
+        if (copyBtn) {
+            copyBtn.addEventListener("click", function() {
+                // Grab the data saved in the button's attributes
+                const name = this.getAttribute("data-name");
+                const address1 = this.getAttribute("data-address1");
+                const address2 = this.getAttribute("data-address2");
+                const city = this.getAttribute("data-city");
+                const state = this.getAttribute("data-state");
+                const zip = this.getAttribute("data-zip");
+                const country = this.getAttribute("data-country");
+
+                // Paste the data into Django's auto-generated Billing Form fields
+                document.getElementById("id_card_name").value = name;
+                document.getElementById("id_card_address1").value = address1;
+                document.getElementById("id_card_address2").value = address2;
+                document.getElementById("id_card_city").value = city;
+                document.getElementById("id_card_state").value = state;
+                document.getElementById("id_card_zipcode").value = zip;
+                document.getElementById("id_card_country").value = country;
+
+                // Visual feedback to let the user know it worked
+                this.innerHTML = '<i class="bi-check-circle-fill me-1 text-success"></i> Details Copied!';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="bi-arrow-down-circle me-1"></i> Use as Billing Address';
+                }, 2000);
+            });
+        }
+    });
+</script>
+
 {% endblock %}
+ {% endcomment %}
 
 
-
-
-
-
-
-
-{% comment %} 
 
 ######################################
 # Razorpay Integration Code Below
 # #####################################
-
 {% block content %}
 
-<section class="py-5">
-  <div class="container">
-    <div class="text-center mb-4">
-      <h1 class="display-5 fw-bold">Complete Payment</h1>
-      <p class="text-muted">Review cart, confirm shipping details and pay securely with Razorpay.</p>
+<style>
+/* ===============================
+   Header Styling
+================================*/
+.billing-header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+    padding: 100px 0 140px 0; 
+}
+
+.billing-header h1 {
+    letter-spacing: -1px;
+    font-weight: 800;
+    animation: fadeDown 1s ease forwards;
+}
+
+.billing-header p {
+    animation: fadeUp 1.2s ease forwards;
+    color: #a0a0a0 !important;
+}
+
+/* ===============================
+   Layout & Overlap
+================================*/
+.billing-container {
+    margin-top: -80px; 
+    position: relative;
+    z-index: 10;
+}
+
+/* ===============================
+   Premium Cards
+================================*/
+.premium-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    border: 1px solid #f0f0f0;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.card-header-premium {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 20px 30px;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #212529;
+    letter-spacing: -0.5px;
+}
+
+/* ===============================
+   Order Summary Styling
+================================*/
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px dashed #e9ecef;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.item-name {
+    font-weight: 600;
+    color: #495057;
+}
+
+.item-price {
+    font-weight: 700;
+    color: #212529;
+}
+
+.price-strike {
+    color: #adb5bd;
+    font-size: 0.9rem;
+    margin-right: 8px;
+}
+
+.total-row {
+    background: #fdfdfd;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 15px;
+    border: 1px solid #f0f0f0;
+}
+
+/* ===============================
+   Data Typography (Shipping)
+================================*/
+.info-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #adb5bd;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.info-data {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 20px;
+}
+
+/* ===============================
+   Premium Buttons
+================================*/
+.btn-premium {
+    border-radius: 30px;
+    padding: 14px 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-premium:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 10px 20px rgba(99, 91, 255, 0.25); 
+    color: white; 
+}
+
+.btn-outline-premium {
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: transparent;
+    color: #212529;
+    border: 2px solid #212529;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.8rem;
+}
+
+.btn-outline-premium:hover { background: #212529; color: #ffffff; box-shadow: 0 5px 15px rgba(33, 37, 41, 0.2); }
+
+/* Animations */
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<header class="billing-header text-center">
+    <div class="container px-4 px-lg-5">
+        <h1 class="display-4 text-white">Complete Payment</h1>
+        <p class="lead fw-normal mb-0">Review your cart and pay securely with Stripe</p>
     </div>
+</header>
 
-    <div class="row gy-4">
-      <div class="col-md-6">
-        <div class="card shadow-sm">
-          <div class="card-header bg-secondary text-white">
-            <strong>Order Summary</strong>
-          </div>
-          <div class="card-body">
-            {% for product in cart_products %}
-              <div class="d-flex justify-content-between border-bottom py-2">
-                <span>{{ product.name }}</span>
-                <span class="fw-bold">₹{% if product.is_sales %}{{ product.sale_price }}{% else %}{{ product.price }}{% endif %}</span>
-              </div>
-            {% endfor %}
-            <div class="d-flex justify-content-between mt-3 pt-2 border-top">
-              <span class="fw-bold">Total</span>
-              <span class="fw-bold">₹{{ totals }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="card shadow-sm mt-4">
-          <div class="card-header bg-secondary text-white">
-            <strong>Shipping Info</strong>
-          </div>
-          <div class="card-body">
-            <p class="mb-1"><strong>Name:</strong> {{ shipping_info.shipping_full_name }}</p>
-            <p class="mb-1"><strong>Email:</strong> {{ shipping_info.shipping_email }}</p>
-            <p class="mb-1"><strong>Address:</strong> {{ shipping_info.shipping_address1 }}{% if shipping_info.shipping_address2 %}, {{ shipping_info.shipping_address2 }}{% endif %}</p>
-            <p class="mb-1"><strong>City:</strong> {{ shipping_info.shipping_city }} | <strong>State:</strong> {{ shipping_info.shipping_state }}</p>
-            <p class="mb-0"><strong>Zip:</strong> {{ shipping_info.shipping_zipcode }} | <strong>Country:</strong> {{ shipping_info.shipping_country }}</p>
-            <div class="mt-3">
-              <a href="{% url 'checkout' %}" class="btn btn-outline-dark btn-sm">Edit Shipping</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="card shadow-sm">
-          <div class="card-header bg-secondary text-white">
-            <strong>Pay With Razorpay</strong>
-          </div>
-          <div class="card-body text-center">
-            <h5 class="mb-3">Total amount: <span class="text-success">₹{{ totals }}</span></h5>
+<div class="container pb-5">
+    <div class="row billing-container justify-content-center">
+        
+        <div class="col-lg-7">
             
-            <form action="{% url 'process_order' %}" method="POST">
-              {% csrf_token %}
-              <script
-                src="https://checkout.razorpay.com/v1/checkout.js"
-                data-key="{{ razorpay_key_id }}"
-                data-amount="{{ razorpay_amount }}"
-                data-currency="INR"
-                data-order_id="{{ razorpay_order_id }}"
-                data-buttontext="Pay with Razorpay"
-                data-name="MacStore"
-                data-description="Order Payment"
-                data-theme.color="#198754"
-                data-prefill.name="{{ shipping_info.shipping_full_name }}"
-                data-prefill.email="{{ shipping_info.shipping_email }}"
+            <div class="card premium-card">
+                <div class="card-header-premium">
+                    <i class="bi-bag-check me-2"></i>Order Summary
+                </div>
+                <div class="card-body p-4">
+                    
+                    {% for product in cart_products %}
+                    <div class="order-item">
+                        <span class="item-name">{{ product.name }}</span>
+                        <span class="item-price">
+                            {% if product.is_sales %}
+                                <strike class="price-strike">₹{{ product.price }}</strike>
+                                ₹{{ product.sale_price }}
+                            {% else %}
+                                ₹{{ product.price }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="total-row d-flex justify-content-between align-items-center">
+                        <span class="text-uppercase fw-bold text-muted" style="letter-spacing: 1px;">Total Amount</span>
+                        <h4 class="fw-bolder text-dark mb-0">₹{{ totals }}</h4>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="card premium-card">
+                <div class="card-header-premium d-flex justify-content-between align-items-center">
+                    <span><i class="bi-box-seam me-2"></i>Shipping Information</span>
+                    <a href="{% url 'checkout' %}" class="btn btn-outline-premium">Edit</a>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="info-label">Full Name</div>
+                            <div class="info-data">{{ shipping_info.shipping_full_name }}</div>
+                            
+                            <div class="info-label">Email Address</div>
+                            <div class="info-data">{{ shipping_info.shipping_email }}</div>
+                            
+                            <div class="info-label">Street Address</div>
+                            <div class="info-data">
+                                {{ shipping_info.shipping_address1 }}
+                                {% if shipping_info.shipping_address2 %}<br>{{ shipping_info.shipping_address2 }}{% endif %}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label">City & State</div>
+                            <div class="info-data">{{ shipping_info.shipping_city }}, {{ shipping_info.shipping_state }}</div>
+                            
+                            <div class="info-label">Zipcode</div>
+                            <div class="info-data">{{ shipping_info.shipping_zipcode }}</div>
+                            
+                            <div class="info-label">Country</div>
+                            <div class="info-data mb-0">{{ shipping_info.shipping_country }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card premium-card sticky-top" style="top: 100px; z-index: 5;">
+                <div class="card-header-premium text-center" style="background-color: #f0fdf4; border-bottom: 1px solid #dcfce7; color: #166534;">
+                    <i class="bi-shield-lock-fill me-2"></i>Secure Checkout
+                </div>
                 
-                data-prefill.contact="9725887879">
-              </script>
-            </form>
-            
-          </div>
-        </div>
+                <div class="card-body p-4 p-md-5 text-center">
+                    
+                    <p class="text-muted text-uppercase fw-bold mb-2" style="font-size: 0.85rem; letter-spacing: 1px;">Amount Due</p>
+                    <h1 class="display-5 fw-bolder text-dark mb-4">₹{{ totals }}</h1>
+                    
+                    <div class="stripe-box mt-4">
+                        
+                        <button id="stripe-button" class="btn btn-premium w-100 btn-lg shadow-sm" style="background: linear-gradient(135deg, #635bff, #4b45c6);">
+                            <i class="bi-credit-card-fill me-2"></i>Pay ₹{{ totals }} with Stripe
+                        </button>
 
-        <div class="alert alert-info mt-3" role="alert">
-          After successful payment, your order is processed and saved automatically.
+                        <script src="https://js.stripe.com/v3/"></script>
+                        <script>
+                        var stripe = Stripe('{{ stripe_public_key }}');
+                        var checkoutButton = document.getElementById('stripe-button');
+
+                        checkoutButton.addEventListener('click', function() {
+                            // Update button visually while Stripe loads
+                            checkoutButton.innerHTML = '<i class="bi-arrow-repeat spin"></i> Redirecting...';
+                            checkoutButton.disabled = true;
+
+                            stripe.redirectToCheckout({
+                                // The session ID was passed from our Django view
+                                sessionId: '{{ stripe_session_id }}'
+                            }).then(function (result) {
+                                // If redirection fails, display an error
+                                if (result.error) {
+                                    alert(result.error.message);
+                                    checkoutButton.innerHTML = '<i class="bi-credit-card-fill me-2"></i>Pay ₹{{ totals }} with Stripe';
+                                    checkoutButton.disabled = false;
+                                }
+                            });
+                        });
+                        </script>
+
+                    </div>
+
+                    <div class="mt-4 pt-4 border-top">
+                        <p class="text-muted small mb-0">
+                            <i class="bi-info-circle me-1"></i> Your payment is 100% encrypted and secured by Stripe. You will be redirected to a secure payment portal.
+                        </p>
+                    </div>
+                    
+                </div>
+            </div>
         </div>
-      </div>
+        
     </div>
-  </div>
-</section>
+</div>
 
-{% endblock %} {% endcomment %}
+<br><br><br>
+
+{% endblock %}

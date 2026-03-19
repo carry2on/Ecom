@@ -129,3 +129,17 @@ MEDIA_ROOT=os.path.join(BASE_DIR,"media")
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Stripe API Keys
+STRIPE_PUBLIC_KEY = ''  # <--- Add this line! Make sure it starts with pk_test
+STRIPE_SECRET_KEY = ''  # You already have this one
+# Print password reset emails to the console for local testing
+EMAIL_BACKEND = ''
+EMAIL_HOST = ''
+EMAIL_PORT = ''
+EMAIL_USE_TLS = 
+
+# Replace with your actual Gmail address
+EMAIL_HOST_USER = '' 
+
+# Replace with the 16-letter App Password you just generated (NO SPACES)
+EMAIL_HOST_PASSWORD = ''

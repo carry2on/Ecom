@@ -92,6 +92,22 @@
 }
 
 /* ===============================
+   Billing Address Display
+================================*/
+.billing-info-text {
+    font-size: 0.95rem;
+    color: #495057;
+    line-height: 1.6;
+}
+
+.billing-info-text i {
+    color: #6c757d;
+    width: 20px;
+    text-align: center;
+    margin-right: 8px;
+}
+
+/* ===============================
    Styling Django's Shipping Form
 ================================*/
 .premium-card label {
@@ -179,47 +195,76 @@
     <div class="row checkout-container justify-content-center">
         
         <div class="col-lg-5 mb-4">
-            <div class="card premium-card sticky-top" style="top: 100px; z-index: 5;">
-                <div class="card-header-premium">
-                    <i class="bi-bag-check me-2"></i>Order Summary
-                </div>
-                <div class="card-body p-4">
-                    
-                    {% for product in cart_products %}
-                    <div class="order-item">
-                        <div class="item-name">{{ product.name }}</div>
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <span class="text-muted small fw-bold">QTY: 
-                                {% for key, value in quantities.items %}
-                                    {% if key == product.id|slugify %}
-                                        {{ value.qty }}
+            
+            <div class="sticky-top" style="top: 100px; z-index: 5;">
+                
+                <div class="card premium-card">
+                    <div class="card-header-premium">
+                        <i class="bi-bag-check me-2 text-primary"></i>Order Summary
+                    </div>
+                    <div class="card-body p-4">
+                        
+                        {% for product in cart_products %}
+                        <div class="order-item">
+                            <div class="item-name">{{ product.name }}</div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="text-muted small fw-bold">QTY: 
+                                    {% for key, value in quantities.items %}
+                                        {% if key == product.id|slugify %}
+                                            {{ value.qty }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="item-price">
+                                    {% if product.is_sales %}
+                                        <strike class="price-strike">₹{{ product.price }}</strike>
+                                        ₹{{ product.sale_price }}
+                                    {% else %}
+                                        ₹{{ product.price }}
                                     {% endif %}
-                                {% endfor %}
-                            </span>
-                            <span class="item-price">
-                                {% if product.is_sales %}
-                                    <strike class="price-strike">₹{{ product.price }}</strike>
-                                    ₹{{ product.sale_price }}
-                                {% else %}
-                                    ₹{{ product.price }}
-                                {% endif %}
-                            </span>
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    {% endfor %}
-                    
-                    <div class="total-row d-flex justify-content-between align-items-center">
-                        <span class="text-uppercase fw-bold text-muted" style="letter-spacing: 1px;">Total Amount</span>
-                        <h4 class="fw-bolder text-dark mb-0">₹{{ totals }}</h4>
-                    </div>
+                        {% endfor %}
+                        
+                        <div class="total-row d-flex justify-content-between align-items-center">
+                            <span class="text-uppercase fw-bold text-muted" style="letter-spacing: 1px;">Total Amount</span>
+                            <h4 class="fw-bolder text-dark mb-0">₹{{ totals }}</h4>
+                        </div>
 
-                    <div class="mt-4 text-center">
-                        <a href="{% url 'cart_summary' %}" class="btn btn-outline-premium w-100">
-                            <i class="bi-cart me-2"></i>Edit Cart Items
-                        </a>
+                        <div class="mt-4 text-center">
+                            <a href="{% url 'cart_summary' %}" class="btn btn-outline-premium w-100">
+                                <i class="bi-cart me-2"></i>Edit Cart Items
+                            </a>
+                        </div>
+                        
                     </div>
-                    
                 </div>
+
+                <div class="card premium-card">
+                    <div class="card-header-premium d-flex justify-content-between align-items-center">
+                        <div><i class="bi-credit-card-2-front me-2 text-success"></i>Billing Address</div>
+                    </div>
+                    <div class="card-body p-4 billing-info-text">
+                        {% if request.user.is_authenticated %}
+                            <p class="mb-2 fw-bold text-dark"><i class="bi-person"></i> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+                            <p class="mb-2"><i class="bi-envelope"></i> {{ request.user.email }}</p>
+                            <p class="mb-2"><i class="bi-geo-alt"></i> 
+                                {{ request.user.profile.address1 }}<br>
+                                {% if request.user.profile.address2 %}
+                                    <span style="margin-left: 28px;">{{ request.user.profile.address2 }}</span><br>
+                                {% endif %}
+                                <span style="margin-left: 28px;">{{ request.user.profile.city }}, {{ request.user.profile.state }} {{ request.user.profile.zipcode }}</span>
+                            </p>
+                        {% else %}
+                            <div class="text-center py-3">
+                                <p class="text-muted mb-3">Log in to view your saved billing address.</p>
+                                <a href="{% url 'login' %}" class="btn btn-outline-premium btn-sm">Log In</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
             </div>
         </div>
 

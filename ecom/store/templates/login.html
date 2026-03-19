@@ -153,11 +153,19 @@
 
                     <p class="text-center text-muted mb-0">
                         Don't have an account?
-                        <a href="" class="text-decoration-none fw-bold text-dark ms-1" style="transition: color 0.3s ease;">
+                        <a href="{% url "register" %}" class="text-decoration-none fw-bold text-dark ms-1" style="transition: color 0.3s ease;">
                             Register
                         </a>
+                       
                     </p>
+<p class="text-center text-muted mb-0 mt-3">
+    Forgot your password?
+    <a href="{% url 'password_reset' %}" class="text-decoration-none fw-bold text-dark ms-1" style="transition: color 0.3s ease;">
+        Reset it here
+    </a>
+</p>
 
+                
                 </div>
             </div>
 

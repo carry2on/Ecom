@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* ===============================
+   Header Styling
+================================*/
+.orders-header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+    padding: 100px 0 140px 0; 
+}
+
+.orders-header h1 {
+    letter-spacing: -1px;
+    font-weight: 800;
+    animation: fadeDown 1s ease forwards;
+}
+
+.orders-header p {
+    animation: fadeUp 1.2s ease forwards;
+    color: #a0a0a0 !important;
+}
+
+/* ===============================
+   Premium Card (Overlapping Effect)
+================================*/
+.orders-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    margin-top: -80px; 
+    position: relative;
+    z-index: 10;
+    padding: 40px;
+}
+
+@media (max-width: 768px) {
+    .orders-card {
+        padding: 20px; /* Smaller padding on mobile */
+        border-radius: 16px;
+    }
+}
+
+/* ===============================
+   Premium Table Styling
+================================*/
+.table-wrapper {
+    border-radius: 16px;
+    border: 1px solid #e9ecef;
+    background: #ffffff;
+    /* Custom Scrollbar for mobile swiping */
+    overflow-x: auto;
+}
+
+/* Make the scrollbar look premium on Windows/Webkit browsers */
+.table-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+.table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    border-radius: 0 0 16px 16px;
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #c1c1c1; 
+    border-radius: 10px;
+}
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8; 
+}
+
+.premium-table {
+    margin-bottom: 0;
+    min-width: 600px; /* Forces table to allow scrolling on tiny screens instead of squishing */
+}
+
+.premium-table thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 18px 20px;
+    border-bottom: 2px solid #e9ecef;
+    white-space: nowrap; /* Keeps headers on one line */
+}
+
+.premium-table tbody td {
+    padding: 18px 20px;
+    vertical-align: middle;
+    color: #212529;
+    font-weight: 500;
+    border-bottom: 1px solid #f1f3f5;
+    white-space: nowrap;
+}
+
+.premium-table tbody tr {
+    transition: all 0.2s ease;
+    animation: fadeInRow 0.5s ease forwards;
+    opacity: 0;
+}
+
+/* Stagger the row fade-in animation */
+.premium-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.premium-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+.premium-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+.premium-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+.premium-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+.premium-table tbody tr:hover {
+    background-color: #fcfcfc;
+    transform: scale(1.005);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    border-radius: 12px;
+}
+
+/* ===============================
+   Buttons & Badges
+================================*/
+.btn-premium-outline {
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: transparent;
+    color: #212529;
+    border: 2px solid #212529;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-premium-outline:hover { 
+    background: #212529; 
+    color: #ffffff; 
+    box-shadow: 0 5px 15px rgba(33, 37, 41, 0.2); 
+    transform: translateY(-2px);
+}
+
+.badge-custom {
+    padding: 8px 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Animations */
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInRow { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+</style>
+
+<header class="orders-header text-center">
+    <div class="container px-4 px-lg-5">
+        <h1 class="display-4 text-white">Order History</h1>
+        <p class="lead fw-normal mb-0">View and track all your past purchases</p>
+    </div>
+</header>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+
+            <div class="card orders-card">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold text-dark mb-0"><i class="bi-box-seam me-2 text-primary"></i>My Orders</h4>
+                </div>
+
+                <div class="table-responsive table-wrapper">
+                    <table class="table premium-table table-borderless align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Date Ordered</th>
+                                <th scope="col">Amount Paid</th>
+                                <th scope="col" class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td class="fw-bold" style="color: #6c757d;">#{{ order.id }}</td>
+                                <td>{{ order.date_ordered|date:"F d, Y" }}</td>
+                                <td class="fw-bold text-dark" style="font-size: 1.1rem;">₹{{ order.amount_paid }}</td>
+                                <td class="text-center">
+                                    {% if order.shipped %}
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill badge-custom">
+                                            <i class="bi-check2-all me-1"></i>Shipped
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning rounded-pill badge-custom">
+                                            <i class="bi-clock-history me-1"></i>Processing
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5">
+                                    <div style="opacity: 0.5;">
+                                        <i class="bi-cart-x display-1 text-muted d-block mb-3"></i>
+                                    </div>
+                                    <h4 class="fw-bold text-dark">No orders found</h4>
+                                    <p class="text-muted mb-4">You haven't placed any orders with us yet.</p>
+                                    <a href="{% url 'home' %}" class="btn btn-premium-outline">Start Shopping</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<br><br><br>
+
+{% endblock %}
