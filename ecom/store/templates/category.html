@@ -9,7 +9,7 @@
 ================================*/
 .category-header {
     background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
-    padding: 100px 0 140px 0; /* Extra padding for overlap effect */
+    padding: 100px 0 140px 0; 
 }
 
 .category-header h1 {
@@ -25,10 +25,10 @@
 }
 
 /* ===============================
-   Card Grid (Overlapping Effect)
+   Card Grid
 ================================*/
 .category-container {
-    margin-top: -80px; /* Pulls the grid up into the dark header */
+    margin-top: -80px; 
     position: relative;
     z-index: 10;
 }
@@ -41,6 +41,8 @@
     border-radius: 16px;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     background: #fff;
+    /* Ensure shadows on badges aren't cut */
+    overflow: visible; 
 }
 
 .premium-card:hover {
@@ -64,7 +66,7 @@
 }
 
 .premium-card:hover .product-img {
-    transform: scale(1.08); /* Zoom effect on hover */
+    transform: scale(1.08); 
 }
 
 /* ===============================
@@ -96,7 +98,7 @@
 }
 
 /* ===============================
-   Sale Badge
+   Sale Badge (FIXED)
 ================================*/
 .sale-badge {
     background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
@@ -107,7 +109,8 @@
     letter-spacing: 1px;
     text-transform: uppercase;
     box-shadow: 0 4px 10px rgba(255, 65, 108, 0.3);
-    z-index: 2;
+    z-index: 10; /* Keeps it above the image */
+    pointer-events: none; /* Stops hover glitching */
 }
 
 /* ===============================
@@ -139,15 +142,8 @@
 }
 
 /* Animations */
-@keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 
 <header class="category-header text-center">
@@ -168,7 +164,7 @@
                     <div class="col mb-5">
                         <div class="card h-100 premium-card position-relative">
                             
-                            <div class="badge text-white position-absolute sale-badge" style="top: 1rem; right: 1rem">Flash Sale</div>
+                            <div class="badge text-white position-absolute sale-badge" style="top: 15px; right: 15px;">Flash Sale</div>
                             
                             <div class="img-container">
                                 <img class="card-img-top product-img" src="{{ product.image.url }}" alt="{{ product.name }}" />

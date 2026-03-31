@@ -1,8 +1,23 @@
 from django.contrib import admin
-from .models import Category,Product,Customer,Order,Profile
-admin.site.register(Category)
-admin.site.register(Product)
-admin.site.register(Customer)
-admin.site.register(Order)
-admin.site.register(Profile)
+from unfold.admin import ModelAdmin
+from .models import Category, Product, Customer, Order, Profile
 
+@admin.register(Category)
+class CategoryAdmin(ModelAdmin):
+    pass
+
+@admin.register(Product)
+class ProductAdmin(ModelAdmin):
+    pass
+
+@admin.register(Customer)
+class CustomerAdmin(ModelAdmin):
+    pass
+
+@admin.register(Order)
+class OrderAdmin(ModelAdmin):
+    pass
+
+@admin.register(Profile)
+class ProfileAdmin(ModelAdmin):
+    pass

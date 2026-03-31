@@ -1,0 +1,47 @@
+# MacCode Store
+
+A premium e-commerce platform built with Django, featuring a sleek modern frontend and a customized, administrative dashboard.
+
+[![Django Version](https://img.shields.com/badge/Django-5.0%2B-green.svg)](https://www.djangoproject.com/)
+[![Payment Processor](https://img.shields.com/badge/Payment-Stripe-blue.svg)](https://stripe.com/)
+[![Admin Theme](https://img.shields.com/badge/Admin%20Theme-Unfold-purple.svg)](https://github.com/unfoldadmin/django-unfold)
+
+---
+
+## 🚀 Overview
+
+MacCode Store is a full-stack e-commerce application designed to provide a seamless, premium shopping experience. It features dynamic product listings, a real-time shopping cart, a secured checkout pipeline, and a highly customized internal administrative dashboard. The project prioritizes modern user experience (UX), robust backend validation, and operational efficiency.
+
+## ✨ Key Features
+
+### 🛒 Frontend (User Experience)
+* **Modern UI/UX:** Responsive design built with Bootstrap 5 and custom CSS3 animations.
+* **Dynamic Cart:** Asynchronous product updates (Add, Qty Update, Remove) powered by AJAX/jQuery.
+* **Sealed Checkout:** Secure checkout pipeline available exclusively to registered users.
+* **Interactive Header:** Dynamic navbar featuring real-time cart counts and customized user avatars (initials/images).
+* **Stripe Integration:** Proactive backend validation ensures transactions meet Stripe’s minimum threshold (₹50), providing a crash-free payment flow.
+
+### 🛡️ Backend & Administration
+* **Secured Authentication:** Fully implemented user registration, login (with safe redirects), and password reset flows.
+* **Unfold Admin Panel:** A highly customized internal dashboard featuring a dark navy/purple theme (Tailwind CSS), optimized layouts, and improved data visualization.
+* **Data Integrity:** Robust DecimalField configurations and transaction checks to handle high-value products securely.
+
+## 🛠️ Tech Stack
+
+* **Backend:** Python 3.x, Django 5.x
+* **Database:** PostgreSQL (or SQLite for development)
+* **Payment:** Stripe API (via `stripe-python`)
+* **Frontend:** HTML5, CSS3, JavaScript/jQuery, AJAX, Bootstrap 5
+* **Admin Framework:** Django Unfold (Tailwind CSS)
+
+## 🔧 Installation & Setup
+
+### Prerequisites
+* Python 3.x
+* Pip
+* A Stripe Account (for API keys)
+
+### Step 1: Clone the Repository
+```bash
+git clone [https://github.com/yourusername/maccode_store.git](https://github.com/yourusername/maccode_store.git)
+cd maccode_store

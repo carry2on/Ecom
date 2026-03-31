@@ -16,7 +16,6 @@
     position: relative;
 }
 
-/* Smooth slide transition */
 .carousel-item img{
     transition: transform 6s ease;
 }
@@ -25,7 +24,6 @@
     transform: scale(1.05);
 }
 
-/* Carousel controls */
 .carousel-control-prev-icon,
 .carousel-control-next-icon{
     background-color: rgba(0,0,0,0.6);
@@ -41,7 +39,7 @@
     border-radius: 18px;
     transition: all .35s ease;
     background: #fff;
-    overflow: hidden;
+    /* REMOVED overflow: hidden so the badge shadow doesn't get cut off */
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
 }
 
@@ -55,6 +53,7 @@
 ================================*/
 .img-container {
     overflow: hidden;
+    border-radius: 18px 18px 0 0; /* ADDED border radius here instead to keep corners round */
     padding: 1.8rem;
     background: linear-gradient(145deg,#f8f9fa,#ffffff);
 }
@@ -71,7 +70,7 @@
 }
 
 /* ===============================
-   Sale Badge
+   Sale Badge (FIXED)
 ================================*/
 .sale-badge {
     background: linear-gradient(135deg,#ff416c,#ff4b2b);
@@ -81,6 +80,8 @@
     font-size: 0.75rem;
     letter-spacing: 1px;
     box-shadow: 0 8px 20px rgba(255,75,43,.4);
+    z-index: 10; /* Keeps it above the image */
+    pointer-events: none; /* Stops hover glitching */
 }
 
 /* ===============================
@@ -112,9 +113,6 @@
 /* ===============================
    Buttons
 ================================*/
-/* ===============================
-   Buttons
-================================*/
 .btn-premium {
     border-radius: 30px;
     padding: 10px 24px;
@@ -124,24 +122,22 @@
     letter-spacing: .5px;
     border: none;
     background: linear-gradient(135deg,#212529,#000);
-    color: white; /* Ensure base text is white */
+    color: white; 
     transition: all .3s ease;
 }
 
-/* Hover State */
 .btn-premium:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 20px rgba(0,0,0,.25);
-    color: white; /* Keep text white on hover */
+    color: white; 
 }
 
-/* Active/Click State (Fixes the dark text issue!) */
 .btn-premium:active, 
 .btn-premium:focus,
 .btn-premium.active {
     background: #000 !important;
     color: white !important; 
-    box-shadow: 0 5px 10px rgba(0,0,0,.2) inset !important; /* Soft inset shadow when pressed */
+    box-shadow: 0 5px 10px rgba(0,0,0,.2) inset !important; 
     outline: none !important;
 }
 
@@ -149,15 +145,8 @@
    Mobile Optimization
 ================================*/
 @media (max-width:768px){
-
-.product-img{
-    height:180px;
-}
-
-.carousel-item img{
-    height:220px !important;
-}
-
+    .product-img{ height:180px; }
+    .carousel-item img{ height:220px !important; }
 }
 </style>
 
@@ -196,7 +185,6 @@
   </div>
 </header>
 
-
 <section class="py-5 bg-light">
     <div class="container px-4 px-lg-5 mt-2">
         <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
@@ -205,7 +193,7 @@
                 {% if product.is_sales %}
                 <div class="col mb-5">
                     <div class="card h-100 premium-card position-relative">
-                        <div class="badge text-white position-absolute sale-badge" style="top: 1rem; right: 1rem">Flash Sale</div>
+                        <div class="badge text-white position-absolute sale-badge" style="top: 15px; right: 15px;">Flash Sale</div>
                         
                         <div class="img-container">
                             <img class="card-img-top product-img" src="{{product.image.url}}" alt="{{product.name}}" />

@@ -124,6 +124,8 @@
     }
 
     /* Flash Sale Badge */
+  /* Flash Sale Badge */
+   /* Flash Sale Badge */
     .sale-badge {
         background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
         border-radius: 25px;
@@ -136,8 +138,9 @@
         position: absolute;
         top: 2rem;
         left: 2rem;
-        z-index: 2;
+        z-index: 100; /* FIXED: Increased from 2 to 100 to stay above zoomed image */
         color: white;
+        pointer-events: none; /* FIXED: Prevents hover glitching */
     }
 </style>
 

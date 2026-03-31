@@ -1,17 +1,23 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, StackedInline
 from .models import ShippingAddress, Order, OrderItem
 
-admin.site.register(ShippingAddress)
-admin.site.register(OrderItem)
+@admin.register(ShippingAddress)
+class ShippingAddressAdmin(ModelAdmin):
+    pass
 
-# Create an OrderItem Inline
-class OrderItemInline(admin.StackedInline):
+@admin.register(OrderItem)
+class OrderItemAdmin(ModelAdmin):
+    pass
+
+# Create an OrderItem Inline using Unfold's StackedInline
+class OrderItemInline(StackedInline):
     model = OrderItem
     extra = 0
 
-# Extend our Order Model
-class OrderAdmin(admin.ModelAdmin):
-    model = Order
+# Extend our Order Model using Unfold's ModelAdmin
+@admin.register(Order)
+class OrderAdmin(ModelAdmin):
     
     # 1. REMOVED 'date_shipped' so the calendar widget appears!
     readonly_fields = ['date_ordered']
@@ -29,6 +35,3 @@ class OrderAdmin(admin.ModelAdmin):
     ]
     
     inlines = [OrderItemInline]
-
-# Re-Register our Order AND OrderAdmin
-admin.site.register(Order, OrderAdmin)

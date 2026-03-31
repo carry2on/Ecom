@@ -84,7 +84,7 @@
     ================================*/
     .search-form-nav {
         width: 100%;
-        max-width: 400px; /* Keeps the search bar from getting too wide */
+        max-width: 400px;
     }
     
     .search-input-nav {
@@ -202,7 +202,15 @@
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle nav-link-premium" id="profileDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Profile</a>
+                    <a class="nav-link dropdown-toggle nav-link-premium d-flex align-items-center gap-2" id="profileDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding-top: 0; padding-bottom: 0;">
+                        {% if user.profile.image %}
+                            <img src="{{ user.profile.image.url }}" alt="Profile Avatar" class="rounded-circle shadow-sm" width="35" height="35" style="object-fit: cover; border: 2px solid #e9ecef;">
+                        {% else %}
+                            <div class="rounded-circle text-white d-flex justify-content-center align-items-center fw-bold shadow-sm" style="width:35px; height:35px; font-size:0.95rem; background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
+                                {{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+                    </a>
                     <ul class="dropdown-menu dropdown-menu-premium" aria-labelledby="profileDropdown">
                         <li><a class="dropdown-item dropdown-item-premium" href="{% url 'update_user' %}">Update Profile</a></li>
                         <li><a class="dropdown-item dropdown-item-premium" href="{% url 'update_password' %}">Change Password</a></li>

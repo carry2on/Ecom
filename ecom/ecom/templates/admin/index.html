@@ -1,0 +1,182 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+
+<style>
+    /* Custom CSS for Premium Layout */
+    .premium-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .premium-charts-grid {
+        display: grid;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+    
+    @media (min-width: 768px) {
+        .premium-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .premium-charts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+        .premium-kpi-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    .premium-card {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .premium-card-title { color: #94a3b8; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .premium-card-metric { color: #ffffff; font-size: 2.25rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.5rem; }
+    .premium-card-footer { color: #64748b; font-size: 0.875rem; }
+    
+    .premium-chart-card {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+    }
+    .premium-chart-title { color: #ffffff; font-size: 1.15rem; font-weight: 600; margin-bottom: 1.25rem; }
+</style>
+
+    {% if kpi %}
+    <div class="premium-kpi-grid">
+        {% for card in kpi %}
+        <div class="premium-card">
+            <div class="premium-card-title">{{ card.title }}</div>
+            <div class="premium-card-metric">{{ card.metric }}</div>
+            <div class="premium-card-footer">{{ card.footer }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if line_chart %}
+    <div class="premium-chart-card" style="margin-bottom: 1.5rem;">
+        <div class="premium-chart-title">Monthly Revenue Pipeline</div>
+        <div style="position: relative; height: 350px;">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if chart and pie_chart %}
+    <div class="premium-charts-grid">
+        <div class="premium-chart-card">
+            <div class="premium-chart-title">Order Fulfillment Status</div>
+            <div style="position: relative; height: 300px;">
+                <canvas id="dashboardChart"></canvas>
+            </div>
+        </div>
+        <div class="premium-chart-card">
+            <div class="premium-chart-title">Products by Category</div>
+            <div style="position: relative; height: 300px; display: flex; justify-content: center;">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // Common Chart styling for dark mode
+            const darkOptions = {
+                color: '#94a3b8',
+                gridColor: '#334155'
+            };
+
+            // A. Draw Line Chart (Monthly Revenue)
+            {% if line_chart %}
+            const revCtx = document.getElementById('revenueChart').getContext('2d');
+            const revData = JSON.parse('{{ line_chart|safe }}');
+            
+            const gradient = revCtx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.4)'); 
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)'); 
+
+            revData.datasets[0].backgroundColor = gradient;
+            revData.datasets[0].borderColor = '#10b981';
+            revData.datasets[0].borderWidth = 3;
+            revData.datasets[0].pointBackgroundColor = '#1e293b'; 
+            revData.datasets[0].pointBorderColor = '#10b981'; 
+            revData.datasets[0].pointBorderWidth = 2;
+            revData.datasets[0].pointRadius = 4;
+            revData.datasets[0].pointHoverRadius = 7; 
+
+            new Chart(revCtx, {
+                type: 'line',
+                data: revData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)', 
+                            titleColor: '#94a3b8', bodyColor: '#ffffff',
+                            bodyFont: { size: 14, weight: 'bold' }, padding: 12,
+                            borderColor: '#334155', borderWidth: 1, displayColors: false,
+                            callbacks: {
+                                label: function(context) { return '₹ ' + context.parsed.y.toLocaleString('en-IN'); }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { 
+                                color: darkOptions.color, padding: 10,
+                                callback: function(value) { return '₹' + value.toLocaleString('en-IN'); }
+                            }, 
+                            grid: { color: darkOptions.gridColor, borderDash: [5, 5], drawBorder: false } 
+                        },
+                        x: { ticks: { color: darkOptions.color, padding: 10 }, grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+            {% endif %}
+
+            // B. Draw Bar Chart
+            const barCtx = document.getElementById('dashboardChart').getContext('2d');
+            const barData = JSON.parse('{{ chart|safe }}');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: barData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0, color: darkOptions.color }, grid: { color: darkOptions.gridColor, borderDash: [5, 5], drawBorder: false } },
+                        x: { ticks: { color: darkOptions.color }, grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+
+            // C. Draw Pie Chart
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            const pieData = JSON.parse('{{ pie_chart|safe }}');
+            new Chart(pieCtx, {
+                type: 'doughnut',
+                data: pieData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: { legend: { position: 'bottom', labels: { color: darkOptions.color, padding: 20, font: {size: 12} } } }
+                }
+            });
+
+        });
+    </script>
+    {% endif %}
+
+{% endblock %}

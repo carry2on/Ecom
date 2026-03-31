@@ -209,16 +209,20 @@ def payment_success(request):
     return render(request, 'payment/payment_success.html')
 
 def checkout(request):
+    # ==========================================
+    # SECURITY CHECK: Block logged-out users
+    # ==========================================
+    if not request.user.is_authenticated:
+        messages.error(request, "You must be logged in to checkout!")
+        return redirect('login')
+
     cart = Cart(request)
     cart_products = cart.get_prods()
     quantities = cart.get_quants()
     totals = cart.cart_total()
 
-    if request.user.is_authenticated:
-        shipping_user, created = ShippingAddress.objects.get_or_create(user=request.user)
-        shipping_form = ShippingForm(request.POST or None, instance=shipping_user)
-    else:
-        shipping_form = ShippingForm(request.POST or None)
+    shipping_user, created = ShippingAddress.objects.get_or_create(user=request.user)
+    shipping_form = ShippingForm(request.POST or None, instance=shipping_user)
 
     return render(request, 'payment/checkout.html', {
         'cart_products': cart_products,
@@ -265,7 +269,6 @@ def orders(req, pk):
         messages.error(req, 'Access Denied')
         return redirect('home')
 
-
 def my_orders(request):
     if not request.user.is_authenticated:
         messages.warning(request, 'Please log in to view your orders.')
@@ -277,13 +280,26 @@ def my_orders(request):
 
     return render(request, 'payment/my_orders.html', {'orders': orders})
 
-
 def billing_info(request):
+    # ==========================================
+    # SECURITY CHECK: Block logged-out users
+    # ==========================================
+    if not request.user.is_authenticated:
+        messages.error(request, "Access Denied. You must be logged in to proceed to billing.")
+        return redirect('login')
+
     if request.method == "POST":
         cart = Cart(request)
         cart_products = cart.get_prods()
         quantities = cart.get_quants()
         totals = cart.cart_total()
+
+        # ==========================================
+        # SAFETY CHECK: Stripe Minimum Amount (₹50)
+        # ==========================================
+        if float(totals) < 50:
+            messages.error(request, "Minimum order amount is ₹50 to process via card. Please add more items to your cart.")
+            return redirect('cart_summary')
 
         # Capture shipping info and save to session safely
         shipping_info = request.POST.dict()
@@ -299,7 +315,7 @@ def billing_info(request):
                 payment_method_types=['card'],
                 line_items=[{
                     'price_data': {
-                        'currency': 'inr', # Change to 'usd' if you prefer dollars
+                        'currency': 'inr', 
                         'unit_amount': amount_in_cents,
                         'product_data': {
                             'name': 'MacStore Order',
@@ -308,7 +324,6 @@ def billing_info(request):
                     'quantity': 1,
                 }],
                 mode='payment',
-                # Stripe will automatically add the session_id to the URL upon success
                 success_url=request.build_absolute_uri(reverse('process_order')) + '?session_id={CHECKOUT_SESSION_ID}',
                 cancel_url=request.build_absolute_uri(reverse('checkout')),
             )
@@ -329,12 +344,10 @@ def billing_info(request):
         return redirect('home')
 
 def process_order(request):
-    # Stripe redirects back via GET, so we look for the session_id in the URL
     session_id = request.GET.get('session_id')
     
     if session_id:
         try:
-            # Verify the payment is actually 'paid' with Stripe's servers
             session = stripe.checkout.Session.retrieve(session_id)
             
             if session.payment_status == 'paid':
@@ -343,12 +356,10 @@ def process_order(request):
                 quantities = cart.get_quants()
                 totals = cart.cart_total()
 
-                # Anti-Ghost Order Shield
                 if totals == 0 or not cart_products:
                     messages.warning(request, "Cart was empty. No new order created.")
                     return redirect('home')
 
-                # Safely grab shipping details from session
                 my_shipping = request.session.get('my_shipping', {})
                 
                 full_name = my_shipping.get('shipping_full_name', '')
@@ -356,7 +367,6 @@ def process_order(request):
                 shipping_address = f"{my_shipping.get('shipping_address1', '')}\n{my_shipping.get('shipping_address2', '')}\n{my_shipping.get('shipping_city', '')}\n{my_shipping.get('shipping_state', '')}\n{my_shipping.get('shipping_zipcode', '')}\n{my_shipping.get('shipping_country', '')}"
                 amount_paid = totals
 
-                # Create the Order
                 if request.user.is_authenticated:
                     create_order = Order(user=request.user, fullname=full_name, email=email, ShippingAddress=shipping_address, amount_paid=amount_paid)
                 else:
@@ -365,7 +375,6 @@ def process_order(request):
                 create_order.save()
                 order_id = create_order.pk
 
-                # Create Order Items
                 for product in cart_products:
                     price = product.sale_price if product.is_sales else product.price
                     for key, value in quantities.items():
@@ -379,9 +388,6 @@ def process_order(request):
                             )
                             create_order_item.save()
 
-                # ==========================================
-                # THE ULTIMATE CART NUKE
-                # ==========================================
                 keys_to_delete = ['session_key', 'cart', 'my_shipping']
                 for key in keys_to_delete:
                     if key in request.session:

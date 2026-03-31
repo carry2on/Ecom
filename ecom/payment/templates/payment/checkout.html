@@ -8,7 +8,7 @@
 ================================*/
 .checkout-header {
     background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
-    padding: 100px 0 140px 0; /* Extra padding for overlap effect */
+    padding: 100px 0 140px 0;
 }
 
 .checkout-header h1 {
@@ -26,7 +26,7 @@
    Layout & Overlap
 ================================*/
 .checkout-container {
-    margin-top: -80px; /* Pulls the grid up into the dark header */
+    margin-top: -80px; 
     position: relative;
     z-index: 10;
 }
@@ -120,7 +120,6 @@
     margin-bottom: 8px;
 }
 
-/* Force override Bootstrap to style Django's auto-generated inputs */
 .premium-card input[type="text"], 
 .premium-card input[type="email"], 
 .premium-card select, 
@@ -179,7 +178,6 @@
 
 .btn-outline-premium:hover { background: #212529; color: #ffffff; box-shadow: 0 5px 15px rgba(33, 37, 41, 0.2); }
 
-/* Animations */
 @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 </style>
@@ -195,7 +193,6 @@
     <div class="row checkout-container justify-content-center">
         
         <div class="col-lg-5 mb-4">
-            
             <div class="sticky-top" style="top: 100px; z-index: 5;">
                 
                 <div class="card premium-card">
@@ -203,7 +200,6 @@
                         <i class="bi-bag-check me-2 text-primary"></i>Order Summary
                     </div>
                     <div class="card-body p-4">
-                        
                         {% for product in cart_products %}
                         <div class="order-item">
                             <div class="item-name">{{ product.name }}</div>
@@ -237,7 +233,6 @@
                                 <i class="bi-cart me-2"></i>Edit Cart Items
                             </a>
                         </div>
-                        
                     </div>
                 </div>
 
@@ -247,6 +242,7 @@
                     </div>
                     <div class="card-body p-4 billing-info-text">
                         {% if request.user.is_authenticated %}
+                        <a href="{% url "update_info" %}">go to add billing</a>
                             <p class="mb-2 fw-bold text-dark"><i class="bi-person"></i> {{ request.user.first_name }} {{ request.user.last_name }}</p>
                             <p class="mb-2"><i class="bi-envelope"></i> {{ request.user.email }}</p>
                             <p class="mb-2"><i class="bi-geo-alt"></i> 
@@ -275,17 +271,41 @@
                 </div>
                 <div class="card-body p-4 p-md-5">
                     
-                    <form method="POST" action="{% url 'billing_info' %}">
-                        {% csrf_token %}
-                        
-                        {{ shipping_form.as_p }}
-                        
-                        <div class="mt-5 pt-3 border-top">
-                            <button type="submit" class="btn btn-premium w-100 btn-lg shadow-sm">
-                                Proceed to Billing <i class="bi-arrow-right ms-2"></i>
-                            </button>
+                    {% if user.is_authenticated %}
+                    
+                        <form method="POST" action="{% url 'billing_info' %}" id="checkout-form">
+                            {% csrf_token %}
+                            
+                            <div class="form-check form-switch mb-4 pb-3 border-bottom">
+                                <input class="form-check-input" type="checkbox" id="sameAsBilling" style="cursor: pointer; transform: scale(1.2); margin-right: 10px;">
+                                <label class="form-check-label fw-bold text-dark" for="sameAsBilling" style="cursor: pointer;">
+                                    Shipping address is the same as Billing Address
+                                </label>
+                            </div>
+                            
+                            {{ shipping_form.as_p }}
+                            
+                            <div class="mt-5 pt-3 border-top">
+                                <button type="submit" class="btn btn-premium w-100 btn-lg shadow-sm" id="submit-btn">
+                                    Proceed to Billing <i class="bi-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </form>
+
+                    {% else %}
+                    
+                        <div class="text-center py-5">
+                            <i class="bi-lock text-muted mb-3" style="font-size: 3.5rem; opacity: 0.5;"></i>
+                            <h3 class="fw-bold text-dark">Please log in to continue</h3>
+                            <p class="text-muted mb-4">You need an account to securely enter your shipping and billing details.</p>
+                            
+                            <div class="d-flex justify-content-center gap-3 mt-4">
+                                <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn btn-premium px-4">Log In</a>
+                                <a href="{% url 'register' %}" class="btn btn-outline-premium px-4">Register</a>
+                            </div>
                         </div>
-                    </form>
+
+                    {% endif %}
                     
                 </div>
             </div>
@@ -295,5 +315,76 @@
 </div>
 
 <br><br><br>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        const requiredFields = [
+            'id_shipping_full_name', 
+            'id_shipping_email', 
+            'id_shipping_address1', 
+            'id_shipping_city', 
+            'id_shipping_state', 
+            'id_shipping_zipcode'
+        ];
+        
+        requiredFields.forEach(function(fieldId) {
+            let inputElement = document.getElementById(fieldId);
+            if(inputElement) {
+                inputElement.setAttribute('required', 'true');
+            }
+        });
+
+        const sameAsBillingCheckbox = document.getElementById('sameAsBilling');
+        
+        if (sameAsBillingCheckbox) {
+            sameAsBillingCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    let fullNameInput = document.getElementById('id_shipping_full_name');
+                    if(fullNameInput) fullNameInput.value = "{{ request.user.first_name|escapejs }} {{ request.user.last_name|escapejs }}".trim();
+                    
+                    let emailInput = document.getElementById('id_shipping_email');
+                    if(emailInput) emailInput.value = "{{ request.user.email|escapejs }}";
+                    
+                    {% if request.user.profile %}
+                        let addr1 = document.getElementById('id_shipping_address1');
+                        if(addr1) addr1.value = "{{ request.user.profile.address1|default:''|escapejs }}";
+                        
+                        let addr2 = document.getElementById('id_shipping_address2');
+                        if(addr2) addr2.value = "{{ request.user.profile.address2|default:''|escapejs }}";
+                        
+                        let city = document.getElementById('id_shipping_city');
+                        if(city) city.value = "{{ request.user.profile.city|default:''|escapejs }}";
+                        
+                        let state = document.getElementById('id_shipping_state');
+                        if(state) state.value = "{{ request.user.profile.state|default:''|escapejs }}";
+                        
+                        let zip = document.getElementById('id_shipping_zipcode');
+                        if(zip) zip.value = "{{ request.user.profile.zipcode|default:''|escapejs }}";
+                        
+                        let country = document.getElementById('id_shipping_country');
+                        if(country) country.value = "{{ request.user.profile.country|default:''|escapejs }}";
+                    {% endif %}
+                    
+                } else {
+                    let addr1 = document.getElementById('id_shipping_address1');
+                    if(addr1) addr1.value = "";
+                    
+                    let addr2 = document.getElementById('id_shipping_address2');
+                    if(addr2) addr2.value = "";
+                    
+                    let city = document.getElementById('id_shipping_city');
+                    if(city) city.value = "";
+                    
+                    let state = document.getElementById('id_shipping_state');
+                    if(state) state.value = "";
+                    
+                    let zip = document.getElementById('id_shipping_zipcode');
+                    if(zip) zip.value = "";
+                }
+            });
+        }
+    });
+</script>
 
 {% endblock %}

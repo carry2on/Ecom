@@ -95,6 +95,116 @@
             font-size: 0.85rem;
             letter-spacing: 0.5px;
         }
+        /* ===============================
+           Premium Multi-Column Footer
+        ================================*/
+        .footer-premium {
+            background: linear-gradient(135deg, #121212 0%, #000000 100%);
+            color: #ffffff;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 70px 0 30px 0;
+            margin-top: auto;
+        }
+
+        .footer-brand {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .footer-heading {
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 1.5rem;
+            color: #f8f9fa;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-text {
+            color: #888888;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Footer Links with hover slide effect */
+        .footer-link {
+            color: #888888;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .footer-link:hover {
+            color: #ffffff;
+            transform: translateX(6px); /* Smooth slide to the right */
+        }
+
+        /* Interactive Social Buttons */
+        .social-container {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Social Hover Animations */
+        .social-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            color: #ffffff;
+        }
+
+        .social-btn.facebook:hover {
+            background: #1877f2;
+            box-shadow: 0 10px 20px rgba(24, 119, 242, 0.3);
+        }
+
+        .social-btn.instagram:hover {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            box-shadow: 0 10px 20px rgba(220, 39, 67, 0.3);
+        }
+
+        .social-btn.twitter:hover {
+            background: #1da1f2;
+            box-shadow: 0 10px 20px rgba(29, 161, 242, 0.3);
+        }
+        
+        .social-btn.linkedin:hover {
+            background: #0077b5;
+            box-shadow: 0 10px 20px rgba(0, 119, 181, 0.3);
+        }
+
+        .footer-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 40px 0 20px;
+        }
+
+        .copyright-text {
+            color: #666666;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 
@@ -116,31 +226,66 @@
     {% endblock %}
 </main>
 
-<footer class="footer-premium mt-auto">
-    <div class="container text-center">
-        
-        <a href="{% url 'home' %}" class="footer-brand">MacCode.</a>
-        <p class="footer-text">
-            Your premium destination for the best tech products. Built with Django, designed for you.
-        </p>
+<footer class="footer-premium">
+    <div class="container">
+        <div class="row">
+            
+            <div class="col-md-4 mb-4 pe-md-5">
+                <a href="{% url 'home' %}" class="footer-brand">MacCode.</a>
+                <p class="footer-text mt-2">
+                    We are committed to providing the best online shopping experience. High-quality products, fast delivery, and excellent support. Built with Django, designed for you.
+                </p>
+            </div>
 
-        <div class="social-container">
-            <a href="#" class="social-btn facebook" title="Facebook">
-                <i class="bi-facebook"></i>
-            </a>
-            <a href="#" class="social-btn instagram" title="Instagram">
-                <i class="bi-instagram"></i>
-            </a>
-            <a href="#" class="social-btn twitter" title="Twitter">
-                <i class="bi-twitter"></i>
-            </a>
+            <div class="col-md-2 mb-4">
+                <h5 class="footer-heading">Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'home' %}" class="footer-link">Home</a></li>
+                    <li><a href="{% url 'category_summary' %}" class="footer-link">Categories</a></li>
+                    <li><a href="{% url 'my_orders' %}" class="footer-link">My Orders</a></li>
+                    <li><a href="{% url 'about' %}" class="footer-link">About Us</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <h5 class="footer-heading">Customer Service</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="footer-link">Shipping & Returns</a></li>
+                    <li><a href="#" class="footer-link">FAQ</a></li>
+                    <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                    <li><a href="#" class="footer-link">Terms & Conditions</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <h5 class="footer-heading">Follow Us</h5>
+                <div class="social-container">
+                    <a href="#" class="social-btn facebook" title="Facebook">
+                        <i class="bi-facebook"></i>
+                    </a>
+                    <a href="#" class="social-btn twitter" title="Twitter">
+                        <i class="bi-twitter"></i>
+                    </a>
+                    <a href="#" class="social-btn instagram" title="Instagram">
+                        <i class="bi-instagram"></i>
+                    </a>
+                    <a href="#" class="social-btn linkedin" title="LinkedIn">
+                        <i class="bi-linkedin"></i>
+                    </a>
+                </div>
+            </div>
+            
         </div>
 
         <div class="footer-divider"></div>
 
-        <p class="copyright-text mb-0">
-            &copy; <script>document.write(new Date().getFullYear())</script> MacCode Store. All Rights Reserved.
-        </p>
+        <div class="row text-center">
+            <div class="col-12">
+                <p class="copyright-text mb-0">
+                    &copy; <script>document.write(new Date().getFullYear())</script> MacCode Store. All rights reserved.
+                </p>
+            </div>
+        </div>
         
     </div>
 </footer>
